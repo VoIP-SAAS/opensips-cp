@@ -3,7 +3,7 @@
     Description: install toolbar OpenSIPS specific js
     -------------------------------------------------
     Author: Song H. Netlab
-    Author URL: http://netlab.com
+    Author URL: http://networklab.global
 =====================================================*/
 if (typeof activeModule === 'undefined' || activeModule === null) {
     console.log("undefined active module");
@@ -24,7 +24,7 @@ try {
         // Check jquery
         var selectHead = $('.ttable thead th[class]');
         var rowCount = $('.ttable tr').length;
-
+        var totalCol = 0;
         $('th').each(function () {
             if ($(this).text() === 'Edit' || $(this).text() === 'Delete') {
                 if ($(this).text() === 'Edit')
@@ -43,7 +43,7 @@ try {
             }
         });
 
-        $('.ttable').show();
+
         $('.ttable').parent().removeClass('spinner');
         // Right global search
         $('head').append('<style type="text/css">.dataTables_wrapper .dataTables_length {\n' +
@@ -134,18 +134,32 @@ try {
         nToolbar.append(nToolbarHtml);
         nToolbar.append(extraColHtml);
 
-
+        $('.ttable').show();
         try {
             var ntlTable = $('.ttable').DataTable({
                 ordering: false,
+                responsive: true,
                 dom: "<'row'<'col-sm-7 ntl-m-1'f><'col-sm-4'l>>" +
                     "<'row'<'col-sm-12 custom-toolbar'>>" +
                     "<'row'<'col-sm-12'tr>>" +
                     "<'row'<'col-sm-5'i><'col-sm-7'p>>",
             });
+
+            //Adjust filter pos
+            $('.ttable td').css('text-align', 'center');
+            $('.ttable th').each(function () {
+                totalCol++;
+                $(this).css('min-width', ($(this).width() + 38) + 'px');
+
+                //Adjust specific column
+                if ($(this).text() === 'DB State') {
+                    $(this).css('min-width', ($(this).width() + 40) + 'px');
+                }
+
+            });
+
         } catch (err) {
-            alert(err + " Please check install guide. https://netlab.com/opensips/toolbar");
-            //window.top.location.reload();
+            alert(err + " Please check install guide. http://networklab.global/opensips/toolbar");
         }
 
         $(".custom-toolbar").append(nToolbar);
@@ -306,6 +320,7 @@ try {
             if (shortDisabled) {
                 ntlTable.destroy();
                 ntlTable = $('.ttable').DataTable({
+                    responsive: true,
                     dom: "<'row'<'col-sm-7 ntl-m-1'f><'col-sm-4'l>>" +
                         "<'row'<'col-sm-12 custom-toolbar'>>" +
                         "<'row'<'col-sm-12'tr>>" +
@@ -355,19 +370,41 @@ try {
             if ($(this).text() === 'Edit' || $(this).text() === 'Delete') {
                 $(this).find('i').remove();
             } else {
-                $(this).append('<i class="fa fa-filter filter-ico"></i>');
+                if ($('.dataTables_empty').length === 0) {
+                    var noData = true;
+                    ntlTable.column(colInx).data().unique().sort().each(function (d, j) {
+                        if (d !== "" && d !== '&nbsp;' && d !== '-') {
+                            noData = false;
+                        }
+                    });
+                    if (!noData)
+                        $(this).append('<i class="fa fa-filter filter-ico"></i>');
+                    else {
+                        $(this).css('min-width', '10px');
+                    }
+
+                } else {
+                    $('.ttable').attr('data-toggle', 'tooltip');
+                    $('.ttable').attr('title', 'No available filter');
+                }
             }
         });
 
 
         var oldIndex = null;
+        var oldApply = null;
         $('.filter-ico').click(function () {
+            // refresh old result
+            if ($.isNumeric(oldApply)) {
+                var columnOld = ntlTable.column(oldApply);
+                columnOld.search("").draw();
+            }
 
             var filterContent = "" +
                 "<div class='column-filter'>" +
                 "  <ul class=\"nav nav-tabs\">\n" +
                 "        <li class=\"active\"><a data-toggle=\"tab\" href=\"#home\">Contains</a></li>\n" +
-                "       <li><a data-toggle=\"tab\" href=\"#menu1\">Does Not Contains</a></li>\n" +
+                "       <li class='tab-uncontained'><a data-toggle=\"tab\" href=\"#menu1\">Does Not Contains</a></li>\n" +
                 "  </ul>\n" +
                 "  <div class=\"tab-content\" style='margin-top: 1.1rem;'>\n" +
                 "    <div id=\"home\" class=\"tab-pane fade in active\">\n" +
@@ -411,7 +448,6 @@ try {
                 var contentField = $('<ul class="filter-col-u"></ul>');
 
                 column.data().unique().sort().each(function (d, j) {
-                    console.log(j);
                     if (d !== "" && d !== '&nbsp;') {
                         rowCnt++;
                         contentField.append("<li  class='filter-col' row-index='" + colIndex + "'><a href='#'>" + d + "</a></li>");
@@ -464,7 +500,7 @@ try {
                 var uncontainedKey = $(this).val().toLowerCase();
                 if (uncontainedKey === '' || uncontainedKey === '&nbsp;') {
                     $('li.ntl-filter-hide').each(function () {
-                        $(this).removeClass('ntl-filter-hide');
+                        $(this).addClass('ntl-filter-hide');
                     });
                 } else {
                     $('div.uncontained').find('.filter-col').each(function () {
@@ -494,29 +530,57 @@ try {
                 $(this).addClass('filter-col-highlight');
             });
 
+            $('.tab-uncontained').click(function () {
+                $('.uncontained .filter-col').each(function () {
+                    $(this).addClass('ntl-filter-hide');
+                });
+            });
+
             $('.apply-btn').click(function () {
+
                 var highCol = 0;
+                var issueDraw = false;
+
                 $('.filter-col-highlight').each(function () {
                     highCol++;
                     var column = ntlTable.column($(this).attr('row-index'));
-                    column.search($(this).children('a').text()).draw();
+                    column.search($(this).children('a').text().toString()).draw();
+                    oldApply = $(this).attr('row-index');
+                    if ($('.dataTables_empty').length !== 0) {
+                        issueDraw = true;
+                    }
                 });
 
                 if (highCol === 0) {
                     var column = ntlTable.column($(this).attr('col-index'));
                     column.search("").draw();
+                    if ($('.dataTables_empty').length !== 0) {
+                        location.reload();
+                    }
                 }
 
                 $('div.column-filter').hide();
                 $('div.column-filter').remove();
+
+                if (issueDraw) {
+                    alert("Detected unavailable data in filter.");
+                    location.reload();
+                }
             });
         });
+
+        if ($('.dataTables_empty').length !== 0) {
+
+            $('.ttable').attr('data-toggle', 'tooltip');
+            $('.ttable').attr('title', 'No available filter');
+        }
+
+        $('[data-toggle="tooltip"]').tooltip();
     });
 
 } catch (e) {
 
-    alert(e + " Please check install guide. https://netlab.com/opensips/toolbar");
-    // //window.top.location.reload();
+    alert(e + " Please check install guide. http://networklab.global/opensips/toolbar");
 
 }
 

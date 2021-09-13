@@ -92,10 +92,8 @@ if ($filtered_records > 0) {
 }
 else {
 	$filtered_records = 0;
-    if (isset($_SESSION['ntl_toolbar']) && $_SESSION['ntl_toolbar'])
-        $empty_res = $no_result;
-    else
-        $empty_res = '<tr><td colspan="'.$colspan.'" class="rowEven" align="center"><br>'.$no_result.'<br><br></td></tr>';
+    if (!isset($_SESSION['ntl_toolbar']) || !$_SESSION['ntl_toolbar'])
+          $empty_res = '<tr><td colspan="'.$colspan.'" class="rowEven" align="center"><br>'.$no_result.'<br><br></td></tr>';
 }
 ?>
 

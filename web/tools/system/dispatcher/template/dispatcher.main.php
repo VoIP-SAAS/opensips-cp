@@ -192,9 +192,8 @@ if (isset($config->dispatcher_groups) && count($set_cache) == 0) {
 	$data_no = $stm->fetchColumn(0);
 }
 if ($data_no==0) {
-    if (isset($_SESSION['ntl_toolbar']) && $_SESSION['ntl_toolbar'])
-        echo($no_result);
-    else
+    if (!isset($_SESSION['ntl_toolbar']) || !$_SESSION['ntl_toolbar'])
+
         echo('<tr><td colspan="'.$colspan.'" class="rowEven" align="center"><br>'.$no_result.'<br><br></td></tr>');
 }
 else

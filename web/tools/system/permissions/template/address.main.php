@@ -128,9 +128,8 @@ $resultset = $stm->fetchAll(PDO::FETCH_ASSOC);
 $data_no=count($resultset);
 
 if ($data_no==0) {
-    if (isset($_SESSION['ntl_toolbar']) && $_SESSION['ntl_toolbar'])
-        echo($no_result);
-    else
+    if (!isset($_SESSION['ntl_toolbar']) || !$_SESSION['ntl_toolbar'])
+
         echo('<tr><td colspan="'.$colspan.'" class="rowEven" align="center"><br>'.$no_result.'<br><br></td></tr>');
 }
 

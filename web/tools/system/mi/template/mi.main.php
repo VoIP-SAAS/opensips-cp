@@ -63,9 +63,8 @@ if (!$_read_only)
 
  $data_no=sizeof($_SESSION['mi_command']);
  if ($data_no==0) {
-     if (isset($_SESSION['ntl_toolbar']) && $_SESSION['ntl_toolbar'])
-         echo($no_result);
-     else
+     if (!isset($_SESSION['ntl_toolbar']) || !$_SESSION['ntl_toolbar'])
+
          echo('<tr><td colspan="2" class="rowEven" align="center"><br>'.$no_result.'<br><br></td></tr>');
  }
  else {

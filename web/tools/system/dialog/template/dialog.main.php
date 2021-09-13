@@ -65,7 +65,7 @@ echo '</tr>';
 echo '</thead>';
 
 if ($data_no==0) {
-//    if (isset($_SESSION['ntl_toolbar']) && $_SESSION['ntl_toolbar'])
+//    if (!isset($_SESSION['ntl_toolbar']) || !$_SESSION['ntl_toolbar'])
 //        echo($no_result);
 //    else
         echo('<tr><td colspan="'.$colspan.'" class="rowEven" align="center"><br>'.$no_result.'<br><br></td></tr>');
