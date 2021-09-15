@@ -5,6 +5,9 @@
     Author: Song H. Netlab
     Author URL: http://networklab.global
 =====================================================*/
+activeModule = 'domains';
+extraColumn = 3;
+
 if (typeof activeModule === 'undefined' || activeModule === null) {
     console.log("undefined active module");
 } else
@@ -25,6 +28,7 @@ try {
         var selectHead = $('.ttable thead th[class]');
         var rowCount = $('.ttable tr').length;
         var totalCol = 0;
+
         $('th').each(function () {
             if ($(this).text() === 'Edit' || $(this).text() === 'Delete') {
                 if ($(this).text() === 'Edit')
@@ -43,11 +47,10 @@ try {
             }
         });
 
-
-        $('.ttable').parent().removeClass('spinner');
         // Right global search
         $('head').append('<style type="text/css">.dataTables_wrapper .dataTables_length {\n' +
-            '        float: right;\n' +
+            '        float: left;\n' +
+            '        padding-top: .755em;\n' +
             '    }</style>');
         $('head').append('<style type="text/css">.dataTables_wrapper .dataTables_filter {\n' +
             '        float: left;\n' +
@@ -64,17 +67,16 @@ try {
             "<td ><input type='number' name='value[]' class=\"form-control\"></td>" +
             "</tr>";
 
-        console.log(activePage)
+        console.log(activePage);
         var extraColHtml = "<form action='toolbar.php' method='post' class='toolbar-form'>" +
             "<input name='active_module' hidden value='" + activePage + "'>" +
             "<div class='table-responsive extra-col'>" +
-            "   <input type='submit' class='btn btn-success btn-sm toolbar-save' style='margin: 5px' value='Save'>" +
-            "   <a class='btn btn-primary add-column'><i class='fa fa-plus'></i></a>" +
-            "   <button style='margin: 5px' type='button' class='btn close btn-danger extra-close'\n" +
+            "<div class=" +
+            "'row ntl-p-b'><button type='button' class='btn close btn-danger extra-close'\n" +
             "                data-dismiss='alert' aria-label='Close'>\n" +
             "                <span aria-hidden='true'>×</span>\n" +
-            "   </button>" +
-            "<table class='table table-bordered text-center table-striped extra-table' name='extra-table' style='border-radius: 1rem;margin-bottom: 0'>" +
+            "   </button></" +
+            "div><table class='table table-bordered text-center table-striped extra-table' name='extra-table' style='border-radius: 1rem;margin-bottom: 0'>" +
             "   <thead><tr><th  class='text-center'>Column Name</th><th  class='text-center'>Column Type</th><th  class='text-center'>Column Length</th></tr></thead>" +
             "   <tbody>" +
             "       <tr>" +
@@ -93,25 +95,29 @@ try {
             "       </tr>" +
             "   </tbody>" +
             "</table>" +
-            "</input></form>";
+            "<div class='col-12 ntl-mt'" +
+            ">" +
+            "   <input type='submit' class='btn ntl-btn ntl-btn-success toolbar-save' value='Save'>" +
+            "   <a class='btn ntl-btn ntl-btn-danger add-column'>Add</a>" +
+            "</div></input></form>";
 
-        var nToolbarHtml = "  <div class='btn-group btn-column'>\n" +
-            "   <a data-toggle='tooltip' title='Add Column' class='btn btn-success extra-column'>" +
-            "       <i class='fa fa-plus'></i>" +
-            "   </a>\n" +
-            "   <a data-toggle='tooltip' title='Column Hide/Show' class='dropdown-toggle btn btn-success hide-show'>" +
-            "        <i class='fa fa-eye-slash hide-show-i'></i>" +
-            "   </a>\n" +
-            "   <a data-toggle='tooltip' title='Column Sort' class='btn btn-success column-short'>" +
-            "       <i class='fa fa-sort' aria-hidden='true'></i>" +
-            "   </a>\n" +
-            "   <a data-toggle='tooltip' title='Column Edit' class='dropdown-toggle btn btn-success column-edit'>" +
-            "       <i class='fa fa-edit' aria-hidden='true'></i>" +
-            "   </a>\n" +
-            "   <a data-toggle='tooltip' title='Column Trash' class='dropdown-toggle btn btn-success column-trash'>" +
-            "       <i class='fa fa-trash' aria-hidden='true'></i>" +
-            "   </a>\n" +
-            "  </div>";
+        var filterHtml = "<div class='col-12 filter-html'><div class='row ntl-p-b'>" +
+            "<button style='margin: 5px' type='button' class='btn close btn-danger filter-close'\n" +
+            "                data-dismiss='alert' aria-label='Close'>\n" +
+            "                <span aria-hidden='true'>×</span>\n" +
+            "</button>" +
+            "</div>" +
+            "<div class='row'>" +
+            "<div class='col-12'>" +
+            "<ul class='filter-checkbox'>" +
+            "</ul>" +
+            "</div>" +
+            "<div class='col-12 ntl-mt filter-submit'>" +
+            "   <a class='btn ntl-btn ntl-btn-success save-filter'>Save</a>" +
+            "   <a class='btn ntl-btn ntl-btn-danger reset-filter'>Reset</a>" +
+            "</div>" +
+            "</div>" +
+            "</div>";
 
         var successAlert = "<div class='alert alert-success alert-dismissible success-alert' role='alert' style='display: none' id='successAlert'>\n" +
             "          <button type='button' class='close' data-dismiss='alert' aria-label='Close'>\n" +
@@ -129,20 +135,32 @@ try {
 
 
         //Add new row in extra column
-        var nToolbar = $('<div class="ntl-toolbar text-left"></div>');
-
-        nToolbar.append(nToolbarHtml);
-        nToolbar.append(extraColHtml);
+        var nToolbar = $('' +
+            ' <div class="dropdown toolbar-dropdown">\n' +
+            '    <button class="btn dropdown-toggle toolbar-button" type="button" data-toggle="dropdown">Actions\n' +
+            '    <span class="caret"></span></button>\n' +
+            '    <ul class="dropdown-menu toolbar-menu">\n' +
+            '      <li class="show-filter"><a href="#"><i class=\'fa fa-filter\'></i>&nbsp;&nbsp;&nbsp;Filter</a></li>\n' +
+            '      <li class="extra-column"><a href="#"><i class=\'fa fa-plus\'></i>&nbsp;&nbsp;&nbsp;Add Column</a></li>\n' +
+            '      <li class="hide-show"><a href="#"><i class=\'fa fa-eye-slash hide-show-i\'></i>&nbsp;&nbsp;Hide/Show</a></li>\n' +
+            '      <li class="column-short"><a href="#"><i class=\'fa fa-sort\'></i>&nbsp;&nbsp;&nbsp;&nbsp;Sort</a></li>\n' +
+            '      <li class="column-edit"><a href="#"><i class=\'fa fa-edit\'></i>&nbsp;&nbsp;Edit</a></li>\n' +
+            '      <li class="column-trash"><a href="#"><i class=\'fa fa-trash\'></i>&nbsp;&nbsp;&nbsp;Trash</a></li>\n' +
+            '    </ul>\n' +
+            '  </div>');
 
         $('.ttable').show();
+        $('.ttable').parent().removeClass('spinner');
+
         try {
+
             var ntlTable = $('.ttable').DataTable({
                 ordering: false,
                 responsive: true,
-                dom: "<'row'<'col-sm-7 ntl-m-1'f><'col-sm-4'l>>" +
-                    "<'row'<'col-sm-12 custom-toolbar'>>" +
+                dom: "<'row'<'col-sm-3 custom-toolbar'><'col-sm-7'f>>" +
+                    "<'row'<'col-sm-12 extra-form'>>" +
                     "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                    "<'row'<'col-sm-4'l><'col-sm-4'i><'col-sm-4'p>>",
             });
 
             //Adjust filter pos
@@ -158,6 +176,9 @@ try {
 
             });
 
+            $('.extra-form').append(extraColHtml);
+            $('.extra-form').append(filterHtml);
+
         } catch (err) {
             alert(err + " Please check install guide. http://networklab.global/opensips/toolbar");
         }
@@ -172,12 +193,16 @@ try {
 
         // Hide/Show extra column
         $('.extra-column').click(function () {
-            $('.extra-col').show(1200);
+            if ($('.filter-html').length !== 0)
+                $('.filter-html').hide(300);
+            $('.extra-col').hide(300);
+            $('.extra-col').show(400);
         });
+
+
         $('.extra-close').click(function () {
             $('.extra-col').hide(400);
         });
-
 
         // Add new row on custom table
         $('.add-column').click(function () {
@@ -199,6 +224,7 @@ try {
             if (request) {
                 request.abort();
             }
+
             var $form = $(this);
             var formVal = "";
             var $inputs = $form.find("input, select, button, textarea");
@@ -210,6 +236,7 @@ try {
 
             $inputs.prop("disabled", true);
 
+            console.log("Rest aJax");
             request = $.ajax({
                 url: "/toolbar/toolbar.php",
                 type: "post",
@@ -217,18 +244,18 @@ try {
             });
 
             request.done(function (response, textStatus, jqXHR) {
+                console.log(response);
                 var res = JSON.parse(response);
                 for (let i = 0; i < res.length; i++) {
                     if ('error' in res[i]) {
-                        nToolbar.prepend(errorAlert);
+                        $('#DataTables_Table_0_wrapper').prepend(errorAlert);
                         $('.error-msg').text(res[i]['message']);
                         $('.error-msg').removeClass('error-msg');
                         $(".error-alert").show();
                         $(".error-alert").addClass('show-alert');
                         $('.error-alert').removeClass('error-alert');
-                    }
-                    else if('success' in res[i]){
-                        nToolbar.prepend(successAlert);
+                    } else if ('success' in res[i]) {
+                        $('#DataTables_Table_0_wrapper').prepend(successAlert);
                         $('.success-msg').text(res[i]['message']);
                         $('.success-msg').removeClass('success-msg');
                         $(".success-alert").show();
@@ -249,18 +276,19 @@ try {
             });
 
             request.always(function () {
-                // Reenable the inputs
+                // re-enable the inputs
                 $inputs.prop("disabled", false);
             });
 
         });
 
 
+
         /*******************************************************************************
-         * Custom (Hide/Show, Shorting, Edit/Delete) Action Of Module Table  -  Toolbar *
+         * Custom (Hide/Show, Sorting, Edit/Delete) Action Of Module Table  -  oolbar *
          *******************************************************************************/
 
-            // Highlight needed action row
+        // highlight needed action row
         var oldRowIndex = null;
         $(".ttable").delegate("tr", "click", function () {
 
@@ -285,7 +313,7 @@ try {
         });
 
 
-        // Hide/show a column
+        // hide/show a column
         $('.hide-show').click(function () {
 
             var highCnt = 0;
@@ -314,18 +342,19 @@ try {
         });
 
 
-        //Enable/Disable shorting
+        //enable/Disable shorting
         var shortDisabled = true;
         $('.column-short').click(function () {
             if (shortDisabled) {
                 ntlTable.destroy();
                 ntlTable = $('.ttable').DataTable({
                     responsive: true,
-                    dom: "<'row'<'col-sm-7 ntl-m-1'f><'col-sm-4'l>>" +
-                        "<'row'<'col-sm-12 custom-toolbar'>>" +
+                    dom: "<'row'<'col-sm-3 custom-toolbar'><'col-sm-7'f>>" +
+                        "<'row'<'col-sm-12 extra-form'>>" +
                         "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                        "<'row'<'col-sm-3'l><'col-sm-3'i><'col-sm-6'p>>",
                 });
+
                 $(".custom-toolbar").append(nToolbar);
                 shortDisabled = false;
                 gDataTable = ntlTable;
@@ -362,14 +391,20 @@ try {
 
 
         /********************************************
-         * Custom Filter Of Module Table  -  Toolbar *
+         * Custom Filter Of Module Table  -  Toolbar*
          *******************************************/
 
+        var filterColIndex = [];
+        var oldIndex = null;
+        var oldApply = null;
+        var sFDisable = false;
         //install custom filter
         selectHead.each(function (idx) {
             if ($(this).text() === 'Edit' || $(this).text() === 'Delete') {
                 $(this).find('i').remove();
             } else {
+
+                var colInx = $(this).index();
                 if ($('.dataTables_empty').length === 0) {
                     var noData = true;
                     ntlTable.column(colInx).data().unique().sort().each(function (d, j) {
@@ -377,12 +412,12 @@ try {
                             noData = false;
                         }
                     });
-                    if (!noData)
-                        $(this).append('<i class="fa fa-filter filter-ico"></i>');
-                    else {
+                    if (!noData) {
+                        // $(this).append('<i class="fa fa-filter filter-ico col-filter-hide"></i>');
+                        filterColIndex.push(colInx);
+                    } else {
                         $(this).css('min-width', '10px');
                     }
-
                 } else {
                     $('.ttable').attr('data-toggle', 'tooltip');
                     $('.ttable').attr('title', 'No available filter');
@@ -390,199 +425,350 @@ try {
             }
         });
 
+        //display and process filter tool
+        $('.show-filter').click(function () {
 
-        var oldIndex = null;
-        var oldApply = null;
-        $('.filter-ico').click(function () {
-            // refresh old result
-            if ($.isNumeric(oldApply)) {
-                var columnOld = ntlTable.column(oldApply);
-                columnOld.search("").draw();
+            function checkFilter(ele, oldApply, oldIndex) {
+
+                var filterCheck = $(ele).find('input');
+                console.log(filterCheck);
+                var filterIco = $(ntlTable.column($(ele).attr('col-index')).header());
+
+                console.log(filterIco);
+                if ($(filterCheck).prop("checked") == true) {
+
+                    filterCheck.prop('checked', false);
+                    if (filterIco.find('.filter-ico').length !== 0)
+                        filterIco.find('.filter-ico').remove();
+                } else {
+
+                    filterCheck.prop('checked', true);
+                    if (filterIco.find('.filter-ico').length === 0)
+                        filterIco.append('<i class="fa fa-filter filter-ico" data-toggle="tooltip" title="show filter"></i>');
+                    else if (filterIco.find('.filter-ico').hasClass('col-filter-hide')) {
+                        filterIco.find('.filter-ico').removeClass('col-filter-hide');
+                    }
+
+                    filterIco.find('.filter-ico').click(function () {
+
+                        // refresh old result
+                        if ($.isNumeric(oldApply)) {
+                            var columnOld = ntlTable.column(oldApply);
+                            columnOld.search("").draw();
+                        }
+
+                        var filterContent = "" +
+                            "<div class='column-filter'>" +
+                            "  <ul class=\"nav nav-tabs\">\n" +
+                            "        <li class=\"active\"><a data-toggle=\"tab\" href=\"#home\">Contains</a></li>\n" +
+                            "       <li class='tab-uncontained'><a data-toggle=\"tab\" href=\"#menu1\">Does Not Contains</a></li>\n" +
+                            "  </ul>\n" +
+                            "  <div class=\"tab-content\" style='margin-top: 1.1rem;'>\n" +
+                            "    <div id=\"home\" class=\"tab-pane fade in active\">\n" +
+                            "      <input type='text' class='form-control contained' col-index='" + $(ele).parent().index() + "'>\n" +
+                            "      <div class='col-filter contained'></div>\n" +
+                            "    </div>\n" +
+                            "    <div id=\"menu1\" class=\"tab-pane fade\">\n" +
+                            "      <input type='text' class='form-control uncontained' col-index='" + $(this).parent().index() + "'>\n" +
+                            "      <div class='col-filter uncontained' ></div>\n" +
+                            "    </div>\n" +
+                            "  </div>" +
+                            "  <div style='text-align: center'><a class='btn ntl-btn ntl-btn-success btn-block apply-btn' col-index='" + $(this).parent().index() + "'>Apply</a></div>" +
+                            "</div>";
+
+                        var rowCnt = 0;
+                        var colIndex = $(this).parent().index();
+                        var column = ntlTable.column(colIndex);
+
+                        if ($('div.column-filter').length) {
+
+                            $('div.column-filter').hide();
+                            $('div.column-filter').remove();
+
+                            if (oldIndex !== $(this).parent().index()) {
+
+                                var otherColFilterContent = $(filterContent).appendTo(column.header());
+                                var oContentField = $('<ul style="list-style-type: none;padding:0"></ul>');
+
+                                column.data().unique().sort().each(function (d, j) {
+                                    if (d !== "" && d !== '&nbsp;') {
+                                        rowCnt++;
+                                        oContentField.append("<li class='filter-col' row-index='" + colIndex + "'><a href='#'>" + d + "</a></li>");
+                                    }
+                                });
+                                oContentField.appendTo($('.col-filter'));
+                                otherColFilterContent.show();
+                            }
+
+                        } else {
+
+                            var colFilterContent = $(filterContent).appendTo(column.header());
+                            var contentField = $('<ul class="filter-col-u"></ul>');
+
+                            column.data().unique().sort().each(function (d, j) {
+                                if (d !== "" && d !== '&nbsp;') {
+                                    rowCnt++;
+                                    contentField.append("<li  class='filter-col' row-index='" + colIndex + "'><a href='#'>" + d + "</a></li>");
+                                }
+                            });
+                            contentField.appendTo($('.col-filter'));
+                            colFilterContent.show();
+                        }
+
+                        if (rowCnt === 0)
+                            $('.apply-btn').attr('disabled', 'disabled');
+
+                        oldIndex = $(this).parent().index();
+
+                        $('.contained').keyup(function () {
+
+                            $('.uncontained').val('');
+                            $('div.uncontained').find('.filter-col').each(function () {
+                                if ($(this).hasClass('ntl-filter-hide')) {
+                                    $(this).removeClass('ntl-filter-hide');
+                                }
+                            });
+                            var containedKey = $(this).val().toLowerCase();
+                            if (containedKey === '' || containedKey === '&nbsp;') {
+                                $('li.ntl-filter-hide').each(function () {
+                                    $(this).removeClass('ntl-filter-hide');
+                                });
+                            } else {
+                                $('div.contained').find('.filter-col').each(function () {
+                                    var eleVal = $(this).children('a').text().toLowerCase();
+                                    if (eleVal.indexOf(containedKey) === -1) {
+                                        $(this).addClass('ntl-filter-hide');
+                                    } else {
+                                        if ($(this).hasClass('ntl-filter-hide')) {
+                                            $(this).removeClass('ntl-filter-hide');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+
+                        $('.uncontained').keyup(function () {
+
+                            $('.contained').val('');
+                            $('div.contained').find('.filter-col').each(function () {
+                                if ($(this).hasClass('ntl-filter-hide')) {
+                                    $(this).removeClass('ntl-filter-hide');
+                                }
+                            });
+
+                            var uncontainedKey = $(this).val().toLowerCase();
+                            if (uncontainedKey === '' || uncontainedKey === '&nbsp;') {
+                                $('li.ntl-filter-hide').each(function () {
+                                    $(this).addClass('ntl-filter-hide');
+                                });
+                            } else {
+                                $('div.uncontained').find('.filter-col').each(function () {
+                                    var eleVal = $(this).children('a').text().toLowerCase();
+                                    if (eleVal.indexOf(uncontainedKey) !== -1) {
+                                        $(this).addClass('ntl-filter-hide');
+                                    } else {
+                                        if ($(this).hasClass('ntl-filter-hide')) {
+                                            $(this).removeClass('ntl-filter-hide');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+
+                        $('.contained .filter-col').click(function () {
+                            $('.filter-col-highlight').each(function () {
+                                $(this).removeClass('filter-col-highlight');
+                            });
+                            $(this).addClass('filter-col-highlight');
+                        });
+
+                        $('.uncontained .filter-col').click(function () {
+                            $('.filter-col-highlight').each(function () {
+                                $(this).removeClass('filter-col-highlight');
+                            });
+                            $(this).addClass('filter-col-highlight');
+                        });
+
+                        $('.tab-uncontained').click(function () {
+                            $('.uncontained .filter-col').each(function () {
+                                $(this).addClass('ntl-filter-hide');
+                            });
+                        });
+
+                        $('.apply-btn').click(function () {
+
+                            var highCol = 0;
+                            var issueDraw = false;
+
+                            $('.filter-col-highlight').each(function () {
+                                highCol++;
+                                var column = ntlTable.column($(this).attr('row-index'));
+                                column.search($(this).children('a').text().toString()).draw();
+                                oldApply = $(this).attr('row-index');
+                                if ($('.dataTables_empty').length !== 0) {
+                                    issueDraw = true;
+                                }
+                            });
+
+                            if (highCol === 0) {
+                                var column = ntlTable.column($(this).attr('col-index'));
+                                column.search("").draw();
+                                if ($('.dataTables_empty').length !== 0) {
+                                    location.reload();
+                                }
+                            }
+
+                            $('div.column-filter').hide();
+                            $('div.column-filter').remove();
+
+                            if (issueDraw) {
+                                alert("Detected unavailable data in filter.");
+                                location.reload();
+                            }
+                        });
+
+                    });
+                }
             }
 
-            var filterContent = "" +
-                "<div class='column-filter'>" +
-                "  <ul class=\"nav nav-tabs\">\n" +
-                "        <li class=\"active\"><a data-toggle=\"tab\" href=\"#home\">Contains</a></li>\n" +
-                "       <li class='tab-uncontained'><a data-toggle=\"tab\" href=\"#menu1\">Does Not Contains</a></li>\n" +
-                "  </ul>\n" +
-                "  <div class=\"tab-content\" style='margin-top: 1.1rem;'>\n" +
-                "    <div id=\"home\" class=\"tab-pane fade in active\">\n" +
-                "      <input type='text' class='form-control contained' col-index='" + $(this).parent().index() + "'>\n" +
-                "      <div class='col-filter contained'></div>\n" +
-                "    </div>\n" +
-                "    <div id=\"menu1\" class=\"tab-pane fade\">\n" +
-                "      <input type='text' class='form-control uncontained' col-index='" + $(this).parent().index() + "'>\n" +
-                "      <div class='col-filter uncontained' ></div>\n" +
-                "    </div>\n" +
-                "  </div>" +
-                "  <div style='text-align: center'><a class='btn btn-danger btn-block apply-btn' col-index='" + $(this).parent().index() + "'>Apply</a></div>" +
-                "</div>";
+            $('li.h-filter').each(function () {
+                $(this).remove();
+            });
 
-            var rowCnt = 0;
-            var colIndex = $(this).parent().index();
-            var column = ntlTable.column(colIndex);
-            if ($('div.column-filter').length) {
+            $.each(filterColIndex, function (iCol, val) {
+                var colHead = $(ntlTable.column(val).header());
+                if (colHead.find('i').length !== 0) {
+                    colHead.find('i').remove();
+                    var colTitle = colHead.html();
+                } else
+                    colTitle = colHead.html();
+                $('.filter-checkbox').append('<li class="h-filter" col-index="' + val + '"><a href="#"><input class="form-check-input" type="checkbox">&nbsp;&nbsp;' + colTitle + '</a></li>');
+            });
 
-                $('div.column-filter').hide();
-                $('div.column-filter').remove();
+            $('.filter-html').hide(300);
+            $('.filter-html').show(400);
 
-                if (oldIndex !== $(this).parent().index()) {
+            $.getJSON("/toolbar/json/toolbar_filter_" + activePage + ".json", function (data, oldApply, oldIndex) {
+                var savedFilterIco = $.makeArray(data)[0];
+                if (typeof savedFilterIco[activePage] !== 'undefined' && savedFilterIco[activePage].length !== 0) {
 
-                    var otherColFilterContent = $(filterContent).appendTo(column.header());
-                    var oContentField = $('<ul style="list-style-type: none;padding:0"></ul>');
-
-                    column.data().unique().sort().each(function (d, j) {
-                        if (d !== "" && d !== '&nbsp;') {
-                            rowCnt++;
-                            oContentField.append("<li class='filter-col' row-index='" + colIndex + "'><a href='#'>" + d + "</a></li>");
+                    for (var ic in savedFilterIco[activePage]) {
+                        var val = savedFilterIco[activePage][ic];
+                        try {
+                            $('li.h-filter').each(function () {
+                                if (parseInt($(this).attr('col-index')) === val) {
+                                    checkFilter(this, oldApply, oldIndex);
+                                }
+                            });
+                        } catch (e) {
+                            alert("Something went wrong! Error load filter data");
+                            console.log(e);
                         }
-                    });
-                    oContentField.appendTo($('.col-filter'));
-                    otherColFilterContent.show();
-                }
-
-            } else {
-
-                var colFilterContent = $(filterContent).appendTo(column.header());
-                var contentField = $('<ul class="filter-col-u"></ul>');
-
-                column.data().unique().sort().each(function (d, j) {
-                    if (d !== "" && d !== '&nbsp;') {
-                        rowCnt++;
-                        contentField.append("<li  class='filter-col' row-index='" + colIndex + "'><a href='#'>" + d + "</a></li>");
-                    }
-                });
-                contentField.appendTo($('.col-filter'));
-                colFilterContent.show();
-            }
-
-            if (rowCnt === 0)
-                $('.apply-btn').attr('disabled', 'disabled');
-
-            oldIndex = $(this).parent().index();
-            $('.contained').keyup(function () {
-
-                $('.uncontained').val('');
-                $('div.uncontained').find('.filter-col').each(function () {
-                    if ($(this).hasClass('ntl-filter-hide')) {
-                        $(this).removeClass('ntl-filter-hide');
-                    }
-                });
-                var containedKey = $(this).val().toLowerCase();
-                if (containedKey === '' || containedKey === '&nbsp;') {
-                    $('li.ntl-filter-hide').each(function () {
-                        $(this).removeClass('ntl-filter-hide');
-                    });
-                } else {
-                    $('div.contained').find('.filter-col').each(function () {
-                        var eleVal = $(this).children('a').text().toLowerCase();
-                        if (eleVal.indexOf(containedKey) === -1) {
-                            $(this).addClass('ntl-filter-hide');
-                        } else {
-                            if ($(this).hasClass('ntl-filter-hide')) {
-                                $(this).removeClass('ntl-filter-hide');
-                            }
-                        }
-                    });
-                }
-            });
-
-            $('.uncontained').keyup(function () {
-
-                $('.contained').val('');
-                $('div.contained').find('.filter-col').each(function () {
-                    if ($(this).hasClass('ntl-filter-hide')) {
-                        $(this).removeClass('ntl-filter-hide');
-                    }
-                });
-
-                var uncontainedKey = $(this).val().toLowerCase();
-                if (uncontainedKey === '' || uncontainedKey === '&nbsp;') {
-                    $('li.ntl-filter-hide').each(function () {
-                        $(this).addClass('ntl-filter-hide');
-                    });
-                } else {
-                    $('div.uncontained').find('.filter-col').each(function () {
-                        var eleVal = $(this).children('a').text().toLowerCase();
-                        if (eleVal.indexOf(uncontainedKey) !== -1) {
-                            $(this).addClass('ntl-filter-hide');
-                        } else {
-                            if ($(this).hasClass('ntl-filter-hide')) {
-                                $(this).removeClass('ntl-filter-hide');
-                            }
-                        }
-                    });
-                }
-            });
-
-            $('.contained .filter-col').click(function () {
-                $('.filter-col-highlight').each(function () {
-                    $(this).removeClass('filter-col-highlight');
-                });
-                $(this).addClass('filter-col-highlight');
-            });
-
-            $('.uncontained .filter-col').click(function () {
-                $('.filter-col-highlight').each(function () {
-                    $(this).removeClass('filter-col-highlight');
-                });
-                $(this).addClass('filter-col-highlight');
-            });
-
-            $('.tab-uncontained').click(function () {
-                $('.uncontained .filter-col').each(function () {
-                    $(this).addClass('ntl-filter-hide');
-                });
-            });
-
-            $('.apply-btn').click(function () {
-
-                var highCol = 0;
-                var issueDraw = false;
-
-                $('.filter-col-highlight').each(function () {
-                    highCol++;
-                    var column = ntlTable.column($(this).attr('row-index'));
-                    column.search($(this).children('a').text().toString()).draw();
-                    oldApply = $(this).attr('row-index');
-                    if ($('.dataTables_empty').length !== 0) {
-                        issueDraw = true;
-                    }
-                });
-
-                if (highCol === 0) {
-                    var column = ntlTable.column($(this).attr('col-index'));
-                    column.search("").draw();
-                    if ($('.dataTables_empty').length !== 0) {
-                        location.reload();
                     }
                 }
+            }).fail(function () {
+                alert("Something went wrong!");
+            });
 
-                $('div.column-filter').hide();
-                $('div.column-filter').remove();
+            if ($('.extra-col').length !== 0)
+                $('.extra-col').hide(300);
 
-                if (issueDraw) {
-                    alert("Detected unavailable data in filter.");
-                    location.reload();
-                }
+            $('li.h-filter').click(function () {
+                checkFilter(this, oldApply, oldIndex);
+            });
+
+
+        });
+
+        //close filter widget
+        $('.filter-close').click(function () {
+            $('.filter-html').hide(400);
+        });
+
+        $('.reset-filter').click(function () {
+            $('.h-filter').each(function () {
+                $(this).find('input').prop('checked', false);
+                $(ntlTable.column($(this).attr('col-index')).header()).find('i').remove();
             });
         });
 
+        //If nothing data
         if ($('.dataTables_empty').length !== 0) {
-
             $('.ttable').attr('data-toggle', 'tooltip');
             $('.ttable').attr('title', 'No available filter');
         }
 
+        // Enable Tooltip
         $('[data-toggle="tooltip"]').tooltip();
+
+        $('.save-filter').click(function () {
+
+            $('.show-alert').each(function () {
+                $(this).remove();
+            });
+
+            var sFCols = [];
+            $('li.h-filter').each(function () {
+                if ($(this).find('input').prop('checked') === true) {
+                    sFCols.push(parseInt($(this).attr('col-index')));
+                }
+            });
+            var saveFCols = {};
+            saveFCols[activePage] = sFCols;
+            // Save filter data
+            var sRquest;
+            sRquest = $.ajax({
+                url: "/toolbar/toolbar.php",
+                type: "post",
+                data: {fStatus: true, sFilter: JSON.stringify(saveFCols)}
+            });
+
+            saveFCols = true;
+            sRquest.done(function (response, textStatus, jqXHR) {
+
+                saveFCols = false;
+                console.log(response);
+                var res = JSON.parse(response);
+                for (let i = 0; i < res.length; i++) {
+                    if ('error' in res[i]) {
+                        $('#DataTables_Table_0_wrapper').prepend(errorAlert);
+                        $('.error-msg').text(res[i]['message']);
+                        $('.error-msg').removeClass('error-msg');
+                        $(".error-alert").show();
+                        $(".error-alert").addClass('show-alert');
+                        $('.error-alert').removeClass('error-alert');
+                    } else if ('success' in res[i]) {
+                        $('#DataTables_Table_0_wrapper').prepend(successAlert);
+                        $('.success-msg').text(res[i]['message']);
+                        $('.success-msg').removeClass('success-msg');
+                        $(".success-alert").show();
+                        $(".success-alert").addClass('show-alert');
+                        $('.success-alert').removeClass('success-alert');
+                    }
+                }
+            });
+        });
+
     });
 
 } catch (e) {
-
-    alert(e + " Please check install guide. http://networklab.global/opensips/toolbar");
+    if ($('.ttable').length !== 0)
+        alert(e + " Please check install guide. http://networklab.global/opensips/toolbar");
 
 }
+
+$(document).mouseout(function (e) {
+
+    var menu = $('li.dropdown-submenu');
+    var submenu = $('li.dropdown-submenu').children('ul');
+    if (!menu.is(e.target)
+        && menu.has(e.target).length === 0
+        && !submenu.is(e.target)
+        && submenu.has(e.target).length === 0
+    ) {
+        submenu.hide();
+    }
+});
 
 $(document).mouseup(function (e) {
 
@@ -604,6 +790,7 @@ $(document).mouseup(function (e) {
         if (!$('.hide-show').is(e.target) && $('.hide-show').has(e.target).length === 0
             && !$('.hide-show-i').is(e.target) && $('.hide-show-i').has(e.target).length === 0
             && !$('.column-trash').is(e.target) && $('.column-trash').has(e.target).length === 0
+            && !$('.toolbar-button').is(e.target) && $('.toolbar-button').has(e.target).length === 0
             && !$('.column-edit').is(e.target) && $('.column-edit').has(e.target).length === 0
             && !$('.column-edit, .fa-edit').is(e.target) && $('.column-edit, .fa-edit').has(e.target).length === 0
             && !$('.column-trash, .fa-trash').is(e.target) && $('.column-trash, .fa-trash').has(e.target).length === 0)
