@@ -2,11 +2,9 @@
     File Name: toolbar.js
     Description: install toolbar OpenSIPS specific js
     -------------------------------------------------
-    Author: Song H. Netlab
+    Author: Song H. Networklab
     Author URL: http://networklab.global
 =====================================================*/
-activeModule = 'domains';
-extraColumn = 3;
 
 if (typeof activeModule === 'undefined' || activeModule === null) {
     console.log("undefined active module");
@@ -24,12 +22,14 @@ try {
     $(document).ready(function () {
 
         $('.pagingTable').parent().parent().remove();
+
         // Check jquery
         var selectHead = $('.ttable thead th[class]');
         var rowCount = $('.ttable tr').length;
         var totalCol = 0;
 
         $('th').each(function () {
+
             if ($(this).text() === 'Edit' || $(this).text() === 'Delete') {
                 if ($(this).text() === 'Edit')
                     var editSelector = true;
@@ -67,12 +67,11 @@ try {
             "<td ><input type='number' name='value[]' class=\"form-control\"></td>" +
             "</tr>";
 
-        console.log(activePage);
         var extraColHtml = "<form action='toolbar.php' method='post' class='toolbar-form'>" +
             "<input name='active_module' hidden value='" + activePage + "'>" +
             "<div class='table-responsive extra-col'>" +
             "<div class=" +
-            "'row ntl-p-b'><button type='button' class='btn close btn-danger extra-close'\n" +
+            "'row'><button type='button' class='btn close btn-danger extra-close'\n" +
             "                data-dismiss='alert' aria-label='Close'>\n" +
             "                <span aria-hidden='true'>×</span>\n" +
             "   </button></" +
@@ -101,7 +100,7 @@ try {
             "   <a class='btn ntl-btn ntl-btn-danger add-column'>Add</a>" +
             "</div></input></form>";
 
-        var filterHtml = "<div class='col-12 filter-html'><div class='row ntl-p-b'>" +
+        var filterHtml = "<div class='col-12 filter-html'><div class='row'>" +
             "<button style='margin: 5px' type='button' class='btn close btn-danger filter-close'\n" +
             "                data-dismiss='alert' aria-label='Close'>\n" +
             "                <span aria-hidden='true'>×</span>\n" +
@@ -109,21 +108,22 @@ try {
             "</div>" +
             "<div class='row'>" +
             "<div class='col-12'>" +
-            "<ul class='filter-checkbox'>" +
-            "</ul>" +
+            "<select class=\"filter-checkbox\" name=\"cols[]\" multiple=\"multiple\" data-width='452px'>" +
+            "</select>" +
             "</div>" +
             "<div class='col-12 ntl-mt filter-submit'>" +
-            "   <a class='btn ntl-btn ntl-btn-success save-filter'>Save</a>" +
+            "   <button class='btn ntl-btn ntl-btn-success save-filter'>Save</button>" +
+            "   <a class='btn ntl-btn btn-primary all-filter' style='margin: 0 5px'>All</a>" +
             "   <a class='btn ntl-btn ntl-btn-danger reset-filter'>Reset</a>" +
             "</div>" +
             "</div>" +
             "</div>";
 
-        var successAlert = "<div class='alert alert-success alert-dismissible success-alert' role='alert' style='display: none' id='successAlert'>\n" +
+        var successAlert = "<div class='alert alert-success alert-dismissible success-alert' role='alert' style='display: none;' id='successAlert'>\n" +
             "          <button type='button' class='close' data-dismiss='alert' aria-label='Close'>\n" +
             "            <span aria-hidden='true'>&times;</span>\n" +
             "          </button>\n" +
-            "          <p class='success-msg'> You just have added.</p>" +
+            "          <p class='success-msg'><b> You just have added. </b></p>" +
             "   </div>";
 
         var errorAlert = "<div class='alert alert-danger alert-dismissible error-alert' role='alert' style='display: none' id='errorAlert'>\n" +
@@ -157,6 +157,7 @@ try {
             var ntlTable = $('.ttable').DataTable({
                 ordering: false,
                 responsive: true,
+                "search": {regex: true},
                 dom: "<'row'<'col-sm-3 custom-toolbar'><'col-sm-7'f>>" +
                     "<'row'<'col-sm-12 extra-form'>>" +
                     "<'row'<'col-sm-12'tr>>" +
@@ -178,6 +179,14 @@ try {
 
             $('.extra-form').append(extraColHtml);
             $('.extra-form').append(filterHtml);
+            $('.filter-checkbox').select2({
+                placeholder: "  Select Column",
+            });
+
+            var sInput = $('#DataTables_Table_0_filter').find('input');
+            $('#DataTables_Table_0_filter').find('label').html('');
+            $('#DataTables_Table_0_filter').find('label').append(sInput);
+            $('#DataTables_Table_0_filter').find('input').attr('placeholder', '    Search');
 
         } catch (err) {
             alert(err + " Please check install guide. http://networklab.global/opensips/toolbar");
@@ -236,7 +245,6 @@ try {
 
             $inputs.prop("disabled", true);
 
-            console.log("Rest aJax");
             request = $.ajax({
                 url: "/toolbar/toolbar.php",
                 type: "post",
@@ -244,7 +252,7 @@ try {
             });
 
             request.done(function (response, textStatus, jqXHR) {
-                console.log(response);
+
                 var res = JSON.parse(response);
                 for (let i = 0; i < res.length; i++) {
                     if ('error' in res[i]) {
@@ -254,6 +262,7 @@ try {
                         $(".error-alert").show();
                         $(".error-alert").addClass('show-alert');
                         $('.error-alert').removeClass('error-alert');
+
                     } else if ('success' in res[i]) {
                         $('#DataTables_Table_0_wrapper').prepend(successAlert);
                         $('.success-msg').text(res[i]['message']);
@@ -263,6 +272,9 @@ try {
                         $('.success-alert').removeClass('success-alert');
                     }
                 }
+                setTimeout(function () {
+                    $(".show-alert").hide(700)
+                }, 5000);
                 $(".load-alert").hide();
             });
 
@@ -283,12 +295,11 @@ try {
         });
 
 
-
         /*******************************************************************************
          * Custom (Hide/Show, Sorting, Edit/Delete) Action Of Module Table  -  oolbar *
          *******************************************************************************/
 
-        // highlight needed action row
+            // highlight needed action row
         var oldRowIndex = null;
         $(".ttable").delegate("tr", "click", function () {
 
@@ -319,7 +330,7 @@ try {
             var highCnt = 0;
             var inRow = 0;
 
-            if ($(this).children('i').hasClass('fa-eye')) {
+            if ($(this).find('i').hasClass('fa-eye')) {
                 location.reload();
             } else
                 $('.row-highlight').each(function () {
@@ -328,7 +339,7 @@ try {
                         $(this).addClass('ntl-row-hide');
                 });
 
-            if (highCnt === 0 && !$(this).children('i').hasClass('fa-eye'))
+            if (highCnt === 0 && !$(this).find('i').hasClass('fa-eye'))
                 alert("Please select a row if needed actions");
 
             $('.ntl-row-hide').each(function () {
@@ -336,8 +347,8 @@ try {
             });
 
             if (inRow === (rowCount - 1)) {
-                $(this).children('i').removeClass('fa-eye-slash');
-                $(this).children('i').addClass('fa-eye');
+                $(this).find('i').removeClass('fa-eye-slash');
+                $(this).find('i').addClass('fa-eye');
             }
         });
 
@@ -349,6 +360,7 @@ try {
                 ntlTable.destroy();
                 ntlTable = $('.ttable').DataTable({
                     responsive: true,
+                    "search": {regex: true},
                     dom: "<'row'<'col-sm-3 custom-toolbar'><'col-sm-7'f>>" +
                         "<'row'<'col-sm-12 extra-form'>>" +
                         "<'row'<'col-sm-12'tr>>" +
@@ -397,7 +409,7 @@ try {
         var filterColIndex = [];
         var oldIndex = null;
         var oldApply = null;
-        var sFDisable = false;
+
         //install custom filter
         selectHead.each(function (idx) {
             if ($(this).text() === 'Edit' || $(this).text() === 'Delete') {
@@ -413,7 +425,6 @@ try {
                         }
                     });
                     if (!noData) {
-                        // $(this).append('<i class="fa fa-filter filter-ico col-filter-hide"></i>');
                         filterColIndex.push(colInx);
                     } else {
                         $(this).css('min-width', '10px');
@@ -425,213 +436,276 @@ try {
             }
         });
 
-        //display and process filter tool
-        $('.show-filter').click(function () {
+        function loadFilter() {
 
-            function checkFilter(ele, oldApply, oldIndex) {
+            $.getJSON("/toolbar/json/toolbar_filter_" + activePage + ".json?v=" + (10 * Math.random() + Math.random()), function (data) {
+                var savedFilterIco = $.makeArray(data)[0];
+                if (typeof savedFilterIco[activePage] !== 'undefined' && savedFilterIco[activePage].length !== 0) {
 
-                var filterCheck = $(ele).find('input');
-                console.log(filterCheck);
-                var filterIco = $(ntlTable.column($(ele).attr('col-index')).header());
+                    $('.filter-checkbox').val(savedFilterIco[activePage]);
+                    $('.filter-checkbox').trigger('change');
 
-                console.log(filterIco);
-                if ($(filterCheck).prop("checked") == true) {
+                    for (var ic in savedFilterIco[activePage]) {
 
-                    filterCheck.prop('checked', false);
-                    if (filterIco.find('.filter-ico').length !== 0)
-                        filterIco.find('.filter-ico').remove();
-                } else {
+                        var val = savedFilterIco[activePage][ic];
+                        var filterIco = $(ntlTable.column(val).header());
 
-                    filterCheck.prop('checked', true);
-                    if (filterIco.find('.filter-ico').length === 0)
-                        filterIco.append('<i class="fa fa-filter filter-ico" data-toggle="tooltip" title="show filter"></i>');
-                    else if (filterIco.find('.filter-ico').hasClass('col-filter-hide')) {
-                        filterIco.find('.filter-ico').removeClass('col-filter-hide');
+                        try {
+                            if (filterIco.find('.filter-ico').length === 0)
+                                filterIco.append('<i class="fa fa-filter filter-ico" data-toggle="tooltip" title="show filter"></i>');
+                            else {
+                                filterIco.find('.filter-ico').remove();
+                                filterIco.append('<i class="fa fa-filter filter-ico" data-toggle="tooltip" title="show filter"></i>');
+                            }
+
+                            filterProcess(filterIco);
+
+                        } catch (e) {
+                            alert("Something went wrong! Error load filter data");
+                            console.log(e);
+                        }
+                    }
+                }
+
+            }).fail(function () {
+                alert("Something went wrong!");
+            });
+        }
+
+        function _filter_keyup_load(ele, selector) {
+
+            var containedKey = $(ele).val().toLowerCase();
+            if (containedKey === '' || containedKey === '&nbsp;') {
+                $('li.ntl-filter-hide').each(function () {
+                    $(this).removeClass('ntl-filter-hide');
+                });
+            } else {
+                $(selector).find('.filter-col').each(function () {
+                    var eleVal = $(this).children('a').text().toLowerCase();
+                    if (eleVal.indexOf(containedKey) === -1) {
+                        $(this).addClass('ntl-filter-hide');
+                        $(this).removeClass('ntl-filter-show');
+                    } else {
+                        if ($(this).hasClass('ntl-filter-hide')) {
+                            $(this).removeClass('ntl-filter-hide');
+                            $(this).addClass('ntl-filter-show');
+                        }
+                        $(this).addClass('ntl-filter-show');
+                    }
+                });
+            }
+
+            filterScroll('li.ntl-filter-show');
+        }
+
+        function filterScroll(selector) {
+            if ($(selector).length > 7)
+                $('.filter-col-u').css('overflow-y', 'scroll');
+            else
+                $('.filter-col-u').css('overflow-y', 'hidden');
+        }
+
+        function filterProcess(filterIco) {
+
+            filterIco.find('.filter-ico').click(function () {
+
+                // refresh old result
+                var colIndex = $(this).parent().index();
+                var filterContent = "" +
+                    "<div class='column-filter'>" +
+                    "  <ul class=\"nav nav-tabs\">\n" +
+                    "        <li class=\"active\"><a data-toggle=\"tab\" href=\"#home\">Contains</a></li>\n" +
+                    "       <li class='tab-uncontained'><a data-toggle=\"tab\" href=\"#menu1\">Does Not Contains</a></li>\n" +
+                    "  </ul>\n" +
+                    "  <div class=\"tab-content\" style='margin-top: 1.1rem;'>\n" +
+                    "    <div id=\"home\" class=\"tab-pane fade in active\">\n" +
+                    "      <input type='text' class='form-control contained' col-index='" + colIndex + "'>\n" +
+                    "      <div class='col-filter contained'></div>\n" +
+                    "    </div>\n" +
+                    "    <div id=\"menu1\" class=\"tab-pane fade\">\n" +
+                    "      <input type='text' class='form-control uncontained' col-index='" + colIndex + "'>\n" +
+                    "      <div class='col-filter uncontained' ></div>\n" +
+                    "    </div>\n" +
+                    "  </div>" +
+                    "  <div style='text-align: center'>" +
+                    "<a class='btn ntl-filter-btn ntl-btn-success apply-btn' col-index='" + colIndex + "'>Apply</a>" +
+                    "<a class='btn ntl-filter-btn ntl-btn-danger reset-btn'  col-index='" + colIndex + "'>Reset</a>" +
+                    "</div>" +
+                    "</div>";
+
+                var rowCnt = 0;
+                var column = ntlTable.column(colIndex);
+
+                if ($('div.column-filter').length) {
+
+                    $('div.column-filter').hide();
+                    $('div.column-filter').remove();
+
+                    if (oldIndex !== $(this).parent().index()) {
+
+                        var otherColFilterContent = $(filterContent).appendTo(column.header());
+                        var oContentField = $('<ul style="list-style-type: none;padding:0"></ul>');
+
+                        column.data().unique().sort().each(function (d, j) {
+                            if (d !== "" && d !== '&nbsp;') {
+                                rowCnt++;
+                                oContentField.append("<li class='filter-col' row-index='" + colIndex + "'><a href='#'>" + d + "</a></li>");
+                            }
+                        });
+                        oContentField.appendTo($('.col-filter'));
+                        otherColFilterContent.show();
                     }
 
-                    filterIco.find('.filter-ico').click(function () {
+                } else {
 
-                        // refresh old result
+                    var colFilterContent = $(filterContent).appendTo(column.header());
+                    var contentField = $('<ul class="filter-col-u"></ul>');
+
+                    column.data().unique().sort().each(function (d, j) {
+                        if (d !== "" && d !== '&nbsp;') {
+                            rowCnt++;
+                            contentField.append("<li  class='filter-col' row-index='" + colIndex + "'><a href='#'>" + d + "</a></li>");
+                        }
+                    });
+                    contentField.appendTo($('.col-filter'));
+                    colFilterContent.show();
+                }
+
+                if (rowCnt === 0)
+                    $('.apply-btn').attr('disabled', 'disabled');
+
+                if ($('li.tab-uncontained').hasClass('active'))
+                    filterScroll('.uncontained .filter-col');
+                else
+                    filterScroll('.contained .filter-col');
+
+                oldIndex = $(this).parent().index();
+
+                $('input.contained').keyup(function () {
+
+                    $('.uncontained').val('');
+                    $('div.uncontained').find('.filter-col').each(function () {
+                        if ($(this).hasClass('ntl-filter-hide')) {
+                            $(this).removeClass('ntl-filter-hide');
+                            $(this).removeClass('ntl-filter-show');
+                        }
+                    });
+
+                    _filter_keyup_load(this, 'div.contained');
+
+                });
+
+                $('input.uncontained').keyup(function () {
+
+                    $('.contained').val('');
+                    $('div.contained').find('.filter-col').each(function () {
+                        if ($(this).hasClass('ntl-filter-hide')) {
+                            $(this).removeClass('ntl-filter-hide');
+                            $(this).removeClass('ntl-filter-show');
+                        }
+                    });
+
+                    _filter_keyup_load(this, 'div.uncontained');
+                });
+
+                $('.contained .filter-col').click(function () {
+                    $('.filter-col-highlight').each(function () {
+                        $(this).removeClass('filter-col-highlight');
+                    });
+                    $(this).addClass('filter-col-highlight');
+                });
+
+                $('.uncontained .filter-col').click(function () {
+                    $('.filter-col-highlight').each(function () {
+                        $(this).removeClass('filter-col-highlight');
+                    });
+                    $(this).addClass('filter-col-highlight');
+                });
+
+                $('.apply-btn').click(function () {
+
+                    var highCol = 0;
+                    var issueDraw = false;
+
+                    if ($('li.ntl-filter-show').length > 10) {
+
+                        var colIx = parseInt($($('li.ntl-filter-show')[0]).attr('row-index'));
+                        var searchTerms = [];
+
                         if ($.isNumeric(oldApply)) {
                             var columnOld = ntlTable.column(oldApply);
                             columnOld.search("").draw();
                         }
 
-                        var filterContent = "" +
-                            "<div class='column-filter'>" +
-                            "  <ul class=\"nav nav-tabs\">\n" +
-                            "        <li class=\"active\"><a data-toggle=\"tab\" href=\"#home\">Contains</a></li>\n" +
-                            "       <li class='tab-uncontained'><a data-toggle=\"tab\" href=\"#menu1\">Does Not Contains</a></li>\n" +
-                            "  </ul>\n" +
-                            "  <div class=\"tab-content\" style='margin-top: 1.1rem;'>\n" +
-                            "    <div id=\"home\" class=\"tab-pane fade in active\">\n" +
-                            "      <input type='text' class='form-control contained' col-index='" + $(ele).parent().index() + "'>\n" +
-                            "      <div class='col-filter contained'></div>\n" +
-                            "    </div>\n" +
-                            "    <div id=\"menu1\" class=\"tab-pane fade\">\n" +
-                            "      <input type='text' class='form-control uncontained' col-index='" + $(this).parent().index() + "'>\n" +
-                            "      <div class='col-filter uncontained' ></div>\n" +
-                            "    </div>\n" +
-                            "  </div>" +
-                            "  <div style='text-align: center'><a class='btn ntl-btn ntl-btn-success btn-block apply-btn' col-index='" + $(this).parent().index() + "'>Apply</a></div>" +
-                            "</div>";
+                        $('li.ntl-filter-show').each(function (ix) {
+                            searchTerms.push($(this).find('a').text().toString());
+                        });
+                        ntlTable.column(colIx)
+                            .search(searchTerms.join('|'), true, false)
+                            .draw();
 
-                        var rowCnt = 0;
-                        var colIndex = $(this).parent().index();
-                        var column = ntlTable.column(colIndex);
+                        highCol++;
+                        oldApply = colIx;
+                    }
 
-                        if ($('div.column-filter').length) {
-
-                            $('div.column-filter').hide();
-                            $('div.column-filter').remove();
-
-                            if (oldIndex !== $(this).parent().index()) {
-
-                                var otherColFilterContent = $(filterContent).appendTo(column.header());
-                                var oContentField = $('<ul style="list-style-type: none;padding:0"></ul>');
-
-                                column.data().unique().sort().each(function (d, j) {
-                                    if (d !== "" && d !== '&nbsp;') {
-                                        rowCnt++;
-                                        oContentField.append("<li class='filter-col' row-index='" + colIndex + "'><a href='#'>" + d + "</a></li>");
-                                    }
-                                });
-                                oContentField.appendTo($('.col-filter'));
-                                otherColFilterContent.show();
+                    if ($('li.tab-uncontained').hasClass('active')) {
+                        $('.filter-col-highlight').each(function () {
+                            highCol++;
+                            var column = ntlTable.column($(this).attr('row-index'));
+                            column.search("^(?:(?!" + $(this).find('a').text().toString() + ").)*$\r?\n?", true, false).draw();
+                            oldApply = $(this).attr('row-index');
+                            if ($('.dataTables_empty').length !== 0) {
+                                issueDraw = true;
                             }
+                        });
+                    } else {
 
-                        } else {
+                        $('.filter-col-highlight').each(function () {
+                            highCol++;
+                            var column = ntlTable.column($(this).attr('row-index'));
+                            column.search($(this).children('a').text().toString()).draw();
+                            oldApply = $(this).attr('row-index');
+                            if ($('.dataTables_empty').length !== 0) {
+                                issueDraw = true;
+                            }
+                        });
 
-                            var colFilterContent = $(filterContent).appendTo(column.header());
-                            var contentField = $('<ul class="filter-col-u"></ul>');
+                    }
 
-                            column.data().unique().sort().each(function (d, j) {
-                                if (d !== "" && d !== '&nbsp;') {
-                                    rowCnt++;
-                                    contentField.append("<li  class='filter-col' row-index='" + colIndex + "'><a href='#'>" + d + "</a></li>");
-                                }
-                            });
-                            contentField.appendTo($('.col-filter'));
-                            colFilterContent.show();
+                    if (highCol === 0) {
+                        var column = ntlTable.column($(this).attr('col-index'));
+                        column.search("").draw();
+                        if ($('.dataTables_empty').length !== 0) {
+                            location.reload();
                         }
+                    }
 
-                        if (rowCnt === 0)
-                            $('.apply-btn').attr('disabled', 'disabled');
+                    $('div.column-filter').hide();
+                    $('div.column-filter').remove();
 
-                        oldIndex = $(this).parent().index();
+                    if (issueDraw) {
+                        alert("Detected unavailable data in filter.");
+                        location.reload();
+                    }
+                });
 
-                        $('.contained').keyup(function () {
+                $('.reset-btn').click(function () {
 
-                            $('.uncontained').val('');
-                            $('div.uncontained').find('.filter-col').each(function () {
-                                if ($(this).hasClass('ntl-filter-hide')) {
-                                    $(this).removeClass('ntl-filter-hide');
-                                }
-                            });
-                            var containedKey = $(this).val().toLowerCase();
-                            if (containedKey === '' || containedKey === '&nbsp;') {
-                                $('li.ntl-filter-hide').each(function () {
-                                    $(this).removeClass('ntl-filter-hide');
-                                });
-                            } else {
-                                $('div.contained').find('.filter-col').each(function () {
-                                    var eleVal = $(this).children('a').text().toLowerCase();
-                                    if (eleVal.indexOf(containedKey) === -1) {
-                                        $(this).addClass('ntl-filter-hide');
-                                    } else {
-                                        if ($(this).hasClass('ntl-filter-hide')) {
-                                            $(this).removeClass('ntl-filter-hide');
-                                        }
-                                    }
-                                });
-                            }
-                        });
-
-                        $('.uncontained').keyup(function () {
-
-                            $('.contained').val('');
-                            $('div.contained').find('.filter-col').each(function () {
-                                if ($(this).hasClass('ntl-filter-hide')) {
-                                    $(this).removeClass('ntl-filter-hide');
-                                }
-                            });
-
-                            var uncontainedKey = $(this).val().toLowerCase();
-                            if (uncontainedKey === '' || uncontainedKey === '&nbsp;') {
-                                $('li.ntl-filter-hide').each(function () {
-                                    $(this).addClass('ntl-filter-hide');
-                                });
-                            } else {
-                                $('div.uncontained').find('.filter-col').each(function () {
-                                    var eleVal = $(this).children('a').text().toLowerCase();
-                                    if (eleVal.indexOf(uncontainedKey) !== -1) {
-                                        $(this).addClass('ntl-filter-hide');
-                                    } else {
-                                        if ($(this).hasClass('ntl-filter-hide')) {
-                                            $(this).removeClass('ntl-filter-hide');
-                                        }
-                                    }
-                                });
-                            }
-                        });
-
-                        $('.contained .filter-col').click(function () {
-                            $('.filter-col-highlight').each(function () {
-                                $(this).removeClass('filter-col-highlight');
-                            });
-                            $(this).addClass('filter-col-highlight');
-                        });
-
-                        $('.uncontained .filter-col').click(function () {
-                            $('.filter-col-highlight').each(function () {
-                                $(this).removeClass('filter-col-highlight');
-                            });
-                            $(this).addClass('filter-col-highlight');
-                        });
-
-                        $('.tab-uncontained').click(function () {
-                            $('.uncontained .filter-col').each(function () {
-                                $(this).addClass('ntl-filter-hide');
-                            });
-                        });
-
-                        $('.apply-btn').click(function () {
-
-                            var highCol = 0;
-                            var issueDraw = false;
-
-                            $('.filter-col-highlight').each(function () {
-                                highCol++;
-                                var column = ntlTable.column($(this).attr('row-index'));
-                                column.search($(this).children('a').text().toString()).draw();
-                                oldApply = $(this).attr('row-index');
-                                if ($('.dataTables_empty').length !== 0) {
-                                    issueDraw = true;
-                                }
-                            });
-
-                            if (highCol === 0) {
-                                var column = ntlTable.column($(this).attr('col-index'));
-                                column.search("").draw();
-                                if ($('.dataTables_empty').length !== 0) {
-                                    location.reload();
-                                }
-                            }
-
-                            $('div.column-filter').hide();
-                            $('div.column-filter').remove();
-
-                            if (issueDraw) {
-                                alert("Detected unavailable data in filter.");
-                                location.reload();
-                            }
-                        });
-
+                    $('.ntl-filter-hide').each(function () {
+                        $(this).removeClass('ntl-filter-hide');
                     });
-                }
-            }
+                    var column = ntlTable.column($(this).attr('col-index'));
+                    column.search("").draw();
+                });
+            });
+        }
 
-            $('li.h-filter').each(function () {
+        //display and process filter tool
+        loadFilter();
+
+        $('.show-filter').click(function () {
+
+            $('option.h-filter').each(function () {
                 $(this).remove();
             });
 
@@ -642,41 +716,24 @@ try {
                     var colTitle = colHead.html();
                 } else
                     colTitle = colHead.html();
-                $('.filter-checkbox').append('<li class="h-filter" col-index="' + val + '"><a href="#"><input class="form-check-input" type="checkbox">&nbsp;&nbsp;' + colTitle + '</a></li>');
+                $('.filter-checkbox').append('<option class="h-filter" value="' + val + '">' + colTitle + '</option>');
             });
+
+            loadFilter();
 
             $('.filter-html').hide(300);
+
             $('.filter-html').show(400);
-
-            $.getJSON("/toolbar/json/toolbar_filter_" + activePage + ".json", function (data, oldApply, oldIndex) {
-                var savedFilterIco = $.makeArray(data)[0];
-                if (typeof savedFilterIco[activePage] !== 'undefined' && savedFilterIco[activePage].length !== 0) {
-
-                    for (var ic in savedFilterIco[activePage]) {
-                        var val = savedFilterIco[activePage][ic];
-                        try {
-                            $('li.h-filter').each(function () {
-                                if (parseInt($(this).attr('col-index')) === val) {
-                                    checkFilter(this, oldApply, oldIndex);
-                                }
-                            });
-                        } catch (e) {
-                            alert("Something went wrong! Error load filter data");
-                            console.log(e);
-                        }
-                    }
-                }
-            }).fail(function () {
-                alert("Something went wrong!");
-            });
 
             if ($('.extra-col').length !== 0)
                 $('.extra-col').hide(300);
 
-            $('li.h-filter').click(function () {
-                checkFilter(this, oldApply, oldIndex);
-            });
 
+            $('.filter-checkbox').on('select2:unselect', function (e) {
+                var data = e.params.data;
+                var filterIco = $(ntlTable.column(data.id).header());
+                filterIco.find('.filter-ico').remove();
+            });
 
         });
 
@@ -686,10 +743,49 @@ try {
         });
 
         $('.reset-filter').click(function () {
-            $('.h-filter').each(function () {
-                $(this).find('input').prop('checked', false);
-                $(ntlTable.column($(this).attr('col-index')).header()).find('i').remove();
+
+            for (var ift in $('.filter-checkbox').select2('val')) {
+                var filterIco = $(ntlTable.column(ift).header());
+                filterIco.find('.filter-ico').remove();
+            }
+
+            $(".filter-checkbox > option").prop("selected", false);
+            $(".filter-checkbox").trigger("change");
+        });
+
+        $('.all-filter').click(function () {
+
+            $(".filter-checkbox > option").prop('selected', 'selected');
+            $(".filter-checkbox").trigger('change');
+            $(".filter-checkbox > option").each(function () {
+
+                $(this).prop('selected', 'selected');
+                var data = {
+                    id: $(this).val(),
+                    text: $(this).text(),
+                }
+
+                $(this).trigger({
+                    type: "select2:select",
+                    params: {
+                        data: data
+                    }
+                });
             });
+        });
+
+        $('.filter-checkbox').on('select2:select', function (e) {
+
+            var data = e.params.data;
+            var filterIco = $(ntlTable.column(data.id).header());
+            if (filterIco.find('.filter-ico').length === 0)
+                filterIco.append('<i class="fa fa-filter filter-ico" data-toggle="tooltip" title="show filter"></i>');
+            else {
+                filterIco.find('.filter-ico').remove();
+                filterIco.append('<i class="fa fa-filter filter-ico" data-toggle="tooltip" title="show filter"></i>');
+            }
+
+            filterProcess(filterIco);
         });
 
         //If nothing data
@@ -701,22 +797,25 @@ try {
         // Enable Tooltip
         $('[data-toggle="tooltip"]').tooltip();
 
-        $('.save-filter').click(function () {
+        $('.save-filter').click(function (e) {
 
             $('.show-alert').each(function () {
                 $(this).remove();
             });
 
-            var sFCols = [];
-            $('li.h-filter').each(function () {
-                if ($(this).find('input').prop('checked') === true) {
-                    sFCols.push(parseInt($(this).attr('col-index')));
-                }
-            });
+            var sFCols = $('.filter-checkbox').select2("val");
             var saveFCols = {};
+
             saveFCols[activePage] = sFCols;
+
             // Save filter data
             var sRquest;
+
+            $(this).prop("disabled", true);
+            $('.reset-filter').attr("disabled", 'disabled');
+            $('.all-filter').attr("disabled", 'disabled');
+            $(this).html(`<i class="fa fa-spinner fa-spin" style="font-size: 0.6rem;"></i>`);
+
             sRquest = $.ajax({
                 url: "/toolbar/toolbar.php",
                 type: "post",
@@ -726,10 +825,19 @@ try {
             saveFCols = true;
             sRquest.done(function (response, textStatus, jqXHR) {
 
+                $('.save-filter').prop("disabled", false);
+                $('.reset-filter').removeAttr("disabled");
+                $('.all-filter').removeAttr("disabled");
+
+                $('.save-filter').text("Save");
+                $('.save-filter').find('.fa-spinner').remove();
+
                 saveFCols = false;
-                console.log(response);
+
                 var res = JSON.parse(response);
+
                 for (let i = 0; i < res.length; i++) {
+
                     if ('error' in res[i]) {
                         $('#DataTables_Table_0_wrapper').prepend(errorAlert);
                         $('.error-msg').text(res[i]['message']);
@@ -737,6 +845,7 @@ try {
                         $(".error-alert").show();
                         $(".error-alert").addClass('show-alert');
                         $('.error-alert').removeClass('error-alert');
+
                     } else if ('success' in res[i]) {
                         $('#DataTables_Table_0_wrapper').prepend(successAlert);
                         $('.success-msg').text(res[i]['message']);
@@ -746,7 +855,39 @@ try {
                         $('.success-alert').removeClass('success-alert');
                     }
                 }
+                setTimeout(function () {
+                    $(".show-alert").hide(700)
+                }, 5000);
             });
+        });
+
+        //Specification - valid domain module
+        function checkDomain() {
+            if ($('#domain').attr('valid') == 'ok') {
+                $('input.formButton').each(function () {
+                    if ($(this).val() == 'Add New Domain' || $(this).val() == 'Save Domain') {
+                        $(this).prop('disabled', false);
+                    }
+                });
+            } else {
+                $('input.formButton').each(function () {
+                    if ($(this).val() == 'Add New Domain' || $(this).val() == 'Save Domain') {
+                        $(this).prop('disabled', true);
+                    }
+                });
+            }
+        }
+
+        $('#domain').keyup(function () {
+            checkDomain();
+        });
+
+        $('#domain').change(function () {
+            checkDomain();
+        });
+
+        $('#attrs').keyup(function () {
+            $('#domain').trigger('change');
         });
 
     });
@@ -754,7 +895,6 @@ try {
 } catch (e) {
     if ($('.ttable').length !== 0)
         alert(e + " Please check install guide. http://networklab.global/opensips/toolbar");
-
 }
 
 $(document).mouseout(function (e) {
@@ -796,6 +936,5 @@ $(document).mouseup(function (e) {
             && !$('.column-trash, .fa-trash').is(e.target) && $('.column-trash, .fa-trash').has(e.target).length === 0)
             $(this).removeClass('row-highlight');
     });
-
 
 });

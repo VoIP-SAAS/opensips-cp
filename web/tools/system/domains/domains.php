@@ -40,12 +40,13 @@ $errors="";
 if ($action=="add")
 {
 	$domain=$_POST['domain'];
-	$sql = "INSERT INTO ".$table." (domain, last_modified) VALUES (? , NOW())";
+	$attrs = $_POST['attrs'];
+	$sql = "INSERT INTO ".$table." (domain, attrs,last_modified) VALUES (? ,?, NOW())";
 	$stm = $link->prepare($sql);
 	if ($stm === false) {
 		die('Failed to issue query ['.$sql.'], error message : ' . print_r($link->errorInfo(), true));
 	}
-	if ($stm->execute( array($domain) )==FALSE ) {
+	if ($stm->execute( array($domain,$attrs) )==FALSE ) {
         	$errors = "Add/Insert to DB failed with: ". print_r($stm->errorInfo(), true);
 	} else {
 		$info="Domain Name has been inserted";
@@ -62,12 +63,13 @@ if ($action=="save")
 {
 	$id=$_GET['id'];
 	$domain=$_POST['domain'];
-	$sql = "UPDATE ".$table." SET domain=?, last_modified=NOW() WHERE id=?";
+	$attrs=$_POST['attrs'];
+	$sql = "UPDATE ".$table." SET domain=?, attrs=?, last_modified=NOW() WHERE id=?";
 	$stm = $link->prepare($sql);
 	if ($stm === false) {
 		die('Failed to issue query ['.$sql.'], error message : ' . print_r($link->errorInfo(), true));
 	}
-	if ($stm->execute( array($domain,$id) )==FALSE ) {
+	if ($stm->execute( array($domain,$attrs,$id) )==FALSE ) {
         	$errors = "Update to DB failed with: ". print_r($stm->errorInfo(), true);
 	} else {
 		$info="Domain name has been modified";

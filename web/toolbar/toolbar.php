@@ -40,7 +40,6 @@ if (!empty($extraReq['active_module'])) {
         unlink($sFileName); //remove old
         file_put_contents($sFileName, json_encode($sFData)); // need directory 777 permission
         array_push($message, ['success' => true, 'message' => ucfirst(key($sFData)) . " module " . $sCnt . " filter saved !"]);
-
     } catch (Exception $exception) {
         array_push($message, ['error' => true, 'message' => $exception]);
     }

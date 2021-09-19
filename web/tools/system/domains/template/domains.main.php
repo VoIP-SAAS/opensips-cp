@@ -35,13 +35,16 @@ if (!$_SESSION['read_only']) {
 		}
 		$stm->execute( array($_GET['id']) );
 		$domain_form = $stm->fetchAll(PDO::FETCH_ASSOC)[0];
+		$attrs = $domain_form['attrs'];
 		$button = "Save Domain";
 	} else {
+
 		## insert form
 		$url = $page_name."?action=add";
 		$title = "New Domain name";
 		# populate the initial values for the form
 		$domain_form['domain'] = null;
+        $attrs = null;
 		$button = "Add New Domain";
 	}
 	?>
@@ -68,10 +71,10 @@ if (!$_SESSION['read_only']) {
                         <tbody>
                         <tr>
                             <td>
-                                <input type="text" name="attr" value="<?php print(!empty($attrs) ? $attrs : "")?>" id="attr" maxlength="128" class="dataInput" opt="n">
+                                <input type="text" name="attrs" value="<?php print(!empty($attrs) ? $attrs : "")?>" id="attrs" maxlength="128" class="dataInput" opt="n">
                             </td>
                             <td width="20">
-                                <div id="domain_ok"></div>
+                                <div id="domain_attr_ok"></div>
                             </td>
                         </tr>
                         </tbody>
