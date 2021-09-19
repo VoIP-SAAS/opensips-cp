@@ -593,6 +593,11 @@ try {
 
                     _filter_keyup_load(this, 'div.contained');
 
+                    if ($('li.ntl-filter-show').length > 7) {
+                        $('.apply-btn').html("All Apply&nbsp;");
+                    } else
+                        $('.apply-btn').html("Apply");
+
                 });
 
                 $('input.uncontained').keyup(function () {
@@ -606,6 +611,11 @@ try {
                     });
 
                     _filter_keyup_load(this, 'div.uncontained');
+
+                    if ($('li.ntl-filter-show').length > 7) {
+                        $('.apply-btn').html("All Apply&nbsp;");
+                    } else
+                        $('.apply-btn').html("Apply");
                 });
 
                 $('.contained .filter-col').click(function () {
@@ -627,7 +637,7 @@ try {
                     var highCol = 0;
                     var issueDraw = false;
 
-                    if ($('li.ntl-filter-show').length > 10) {
+                    if ($('li.ntl-filter-show').length > 7) {
 
                         var colIx = parseInt($($('li.ntl-filter-show')[0]).attr('row-index'));
                         var searchTerms = [];
@@ -640,9 +650,14 @@ try {
                         $('li.ntl-filter-show').each(function (ix) {
                             searchTerms.push($(this).find('a').text().toString());
                         });
-                        ntlTable.column(colIx)
-                            .search(searchTerms.join('|'), true, false)
-                            .draw();
+                        if ($('li.tab-uncontained').hasClass('active')) {
+                            ntlTable.column(colIx)
+                                .search("^(?:(?!" + searchTerms.join('|') + ").)*$\r?\n?", true, false)
+                                .draw();
+                        } else
+                            ntlTable.column(colIx)
+                                .search(searchTerms.join('|'), true, false)
+                                .draw();
 
                         highCol++;
                         oldApply = colIx;
@@ -855,10 +870,13 @@ try {
                         $('.success-alert').removeClass('success-alert');
                     }
                 }
+
+                $('.filter-html').hide(1200);
                 setTimeout(function () {
                     $(".show-alert").hide(700)
                 }, 5000);
             });
+
         });
 
         //Specification - valid domain module
