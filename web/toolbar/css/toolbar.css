@@ -204,7 +204,23 @@ li > a {
 .filter-col-u {
     list-style-type: none;
     padding: 0;
-    height: 271px;
+    max-height: 271px;
+}
+
+table.dataTable tbody tr.selected {
+    background-color: #1cbe9a;
+}
+
+.ttable .selected td {
+    background: none;
+}
+
+table.ttable tr.selected:hover td {
+    background: #1cbeac;
+}
+
+.ttable tr:hover td {
+    background: none;
 }
 
 .hide-menu {
@@ -373,6 +389,10 @@ li > a {
     color: #1cbe9a !important;
 }
 
+.alert-danger p {
+    color: #ff6a5f !important;
+}
+
 .close:focus, .close:hover {
     color: #1cbe9f;
     text-decoration: none;
@@ -458,4 +478,35 @@ li > a {
     background-color: #fefefe !important;
     line-height: 1.6;
     margin-top: 0;
+}
+
+.jconfirm .jconfirm-box.jconfirm-type-green {
+    border-top: solid 7px #1cbe9a;
+    animation-name: none;
+}
+
+.jconfirm .jconfirm-box .jconfirm-buttons button.btn-red {
+    background-color: #1cbe9a !important;
+}
+
+.jconfirm .jconfirm-box .jconfirm-buttons button.btn-red:hover {
+    background-color: #1cbeaf !important;
+}
+
+.jconfirm .jconfirm-box .jconfirm-buttons button.btn-default {
+    background-color: #1cbe9a !important;
+    color: #fff!important;
+}
+
+.jconfirm .jconfirm-box .jconfirm-buttons button.btn-default:hover {
+    background-color: #1cbeaf !important;
+    color: #fff!important;}
+
+.jconfirm .jconfirm-box div.jconfirm-title-c {
+    font-size: 18px;
+}
+.beta-badge{
+    margin: 9px 0px 0px 16px;
+    float: left;
+    background: #f26a60;
 }

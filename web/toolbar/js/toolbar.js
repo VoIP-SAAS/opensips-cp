@@ -6,8 +6,9 @@
     Author URL: http://networklab.global
 =====================================================*/
 
-if (typeof activeModule === 'undefined' || activeModule === null) {
+if (typeof activeModule === "undefined") {
     console.log("undefined active module");
+    activePage = 'domains';
 } else
     activePage = activeModule;
 
@@ -21,11 +22,13 @@ try {
 
     $(document).ready(function () {
 
+        // delete pagination of opensips
+
+        console.log("Active Module: " + activePage);
         $('.pagingTable').parent().parent().remove();
 
         // Check jquery
         var selectHead = $('.ttable thead th[class]');
-        var rowCount = $('.ttable tr').length;
         var totalCol = 0;
 
         $('th').each(function () {
@@ -71,7 +74,9 @@ try {
             "<input name='active_module' hidden value='" + activePage + "'>" +
             "<div class='table-responsive extra-col'>" +
             "<div class=" +
-            "'row'><button type='button' class='btn close btn-danger extra-close'\n" +
+            "'row'>" +
+            "<span class=\"badge badge-pill badge-danger beta-badge\">beta</span>" +
+            "<button type='button' class='btn close btn-danger extra-close'\n" +
             "                data-dismiss='alert' aria-label='Close'>\n" +
             "                <span aria-hidden='true'>×</span>\n" +
             "   </button></" +
@@ -158,6 +163,9 @@ try {
                 ordering: false,
                 responsive: true,
                 "search": {regex: true},
+                select: {
+                    style: 'multi'
+                },
                 dom: "<'row'<'col-sm-3 custom-toolbar'><'col-sm-7'f>>" +
                     "<'row'<'col-sm-12 extra-form'>>" +
                     "<'row'<'col-sm-12'tr>>" +
@@ -188,8 +196,22 @@ try {
             $('#DataTables_Table_0_filter').find('label').append(sInput);
             $('#DataTables_Table_0_filter').find('input').attr('placeholder', '    Search');
 
-        } catch (err) {
-            alert(err + " Please check install guide. http://networklab.global/opensips/toolbar");
+        } catch (e) {
+            $.confirm({
+                title: 'Error!',
+                content: e + " Please check install guide. http://networklab.global/opensips/toolbar",
+                type: 'red',
+                closeIcon: true,
+                escapeKey: true,
+                backgroundDismiss: true,
+                backgroundDismissAnimation: 'shake',
+                buttons: {
+                    tryAgain: {
+                        text: 'Try again',
+                        btnClass: 'btn-red',
+                    }
+                }
+            });
         }
 
         $(".custom-toolbar").append(nToolbar);
@@ -208,7 +230,6 @@ try {
             $('.extra-col').show(400);
         });
 
-
         $('.extra-close').click(function () {
             $('.extra-col').hide(400);
         });
@@ -216,13 +237,28 @@ try {
         // Add new row on custom table
         $('.add-column').click(function () {
             if (extraLimit < $('.extra-table tr').length) {
-                alert("Can't add anymore. Please contact us ")
+                $.confirm({
+                    title: 'warning!',
+                    content: "Can't add anymore. Please contact us ",
+                    type: 'red',
+                    closeIcon: true,
+                    escapeKey: true,
+                    backgroundDismiss: true,
+                    backgroundDismissAnimation: 'shake',
+                    buttons: {
+                        tryAgain: {
+                            text: 'Try again',
+                            btnClass: 'btn-red',
+                        }
+                    }
+                });
             } else
                 $(".extra-table > tbody").append(extraColRowHtml);
         });
 
         //Submit request to create new columns
         var request;
+
         $(".toolbar-form").submit(function (event) {
 
             $('.show-alert').each(function () {
@@ -299,33 +335,16 @@ try {
          * Custom (Hide/Show, Sorting, Edit/Delete) Action Of Module Table  -  oolbar *
          *******************************************************************************/
 
-            // highlight needed action row
-        var oldRowIndex = null;
-        $(".ttable").delegate("tr", "click", function () {
+        // Highlight needed action row
 
-            if ($(this).children('th').length) {
-                vt = 0;
-            } else {
-                var curRow = $(this).index();
-                if (oldRowIndex !== curRow) {
-
-                    $('tr').removeClass('row-highlight');
-                    $(this).addClass('row-highlight');
-                    oldRowIndex = curRow;
-
-                } else {
-
-                    if ($(this).hasClass('row-highlight'))
-                        $(this).removeClass('row-highlight');
-                    else
-                        $(this).addClass('row-highlight');
-                }
-            }
+        $(".ttable tbody").on('click', 'tr', function () {
+            $(this).toggleClass('selected');
         });
 
-
-        // hide/show a column
+        // Hide/show a column
         $('.hide-show').click(function () {
+
+            var rowCount = $('.ttable tr').length;
 
             var highCnt = 0;
             var inRow = 0;
@@ -333,14 +352,30 @@ try {
             if ($(this).find('i').hasClass('fa-eye')) {
                 location.reload();
             } else
-                $('.row-highlight').each(function () {
+                $('.selected').each(function () {
                     highCnt++;
-                    if (!$(this).hasClass('ntl-row-hide'))
+                    if (!$(this).hasClass('ntl-row-hide')) {
                         $(this).addClass('ntl-row-hide');
+                        $(this).removeClass('selected');
+                    }
                 });
 
             if (highCnt === 0 && !$(this).find('i').hasClass('fa-eye'))
-                alert("Please select a row if needed actions");
+                $.confirm({
+                    title: 'warning!',
+                    content: 'None selected. Please select a row.',
+                    type: 'green',
+                    closeIcon: true,
+                    escapeKey: true,
+                    backgroundDismiss: true,
+                    backgroundDismissAnimation: 'shake',
+                    buttons: {
+                        tryAgain: {
+                            text: 'Try again',
+                            btnClass: 'btn-red',
+                        },
+                    }
+                });
 
             $('.ntl-row-hide').each(function () {
                 inRow++;
@@ -353,7 +388,7 @@ try {
         });
 
 
-        //enable/Disable shorting
+        // Enable/disable sorting
         var shortDisabled = true;
         $('.column-short').click(function () {
             if (shortDisabled) {
@@ -361,6 +396,9 @@ try {
                 ntlTable = $('.ttable').DataTable({
                     responsive: true,
                     "search": {regex: true},
+                    select: {
+                        style: 'multi'
+                    },
                     dom: "<'row'<'col-sm-3 custom-toolbar'><'col-sm-7'f>>" +
                         "<'row'<'col-sm-12 extra-form'>>" +
                         "<'row'<'col-sm-12'tr>>" +
@@ -379,32 +417,121 @@ try {
         // Edit a row
         $('.column-edit').click(function () {
             var highCnt = 0;
-            $('.row-highlight').each(function () {
+            if ($('.selected').length > 1) {
+                $.confirm({
+                    title: 'warning!',
+                    content: 'Selected multiple row. Please select a row.',
+                    type: 'green',
+                    closeIcon: true,
+                    escapeKey: true,
+                    backgroundDismiss: true,
+                    backgroundDismissAnimation: 'shake',
+                    buttons: {
+                        tryAgain: {
+                            text: 'Try again',
+                            btnClass: 'btn-red',
+                        },
+                    }
+                });
+                return;
+            }
+            $('.selected').each(function () {
                 highCnt++;
+                $(this).removeClass('selected');
                 window.location.href = $(this).children('.edit-href').val();
             });
             if (highCnt === 0)
-                alert("Please select a row if needed actions");
+                $.confirm({
+                    title: 'warning!',
+                    content: 'None selected. Please select a row.',
+                    type: 'green',
+                    closeIcon: true,
+                    escapeKey: true,
+                    backgroundDismiss: true,
+                    backgroundDismissAnimation: 'shake',
+                    buttons: {
+                        tryAgain: {
+                            text: 'Try again',
+                            btnClass: 'btn-red',
+                        },
+                    }
+                });
         });
 
-
         // Trash a row
-        $('.column-trash').click(function () {
+
+        $('.custom-toolbar').bind('trashSelected',function () {
+
             var highCnt = 0;
-            $('.row-highlight').each(function () {
+            var trashEle = [];
+            var trashValue = "";
+            $('.selected').each(function () {
+
                 highCnt++;
-                if (confirm("Are you sure this " + activePage + "?")) {
-                    window.location.href = $(this).children('.trash-href').val();
-                }
+                trashEle.push(this)
+                trashValue += $(this).find('.trash-href').val() + "\n";
+
             });
+            if (highCnt !== 0){
+
+                $.confirm({
+                    title: 'Confirm!',
+                    content: "Are you sure this " + highCnt + " " + activePage + "?",
+                    type: 'green',
+                    closeIcon: true,
+                    escapeKey: true,
+                    backgroundDismiss: true,
+                    backgroundDismissAnimation: 'shake',
+                    buttons: {
+
+                        confirm: function () {
+
+                            for (var ele in trashEle){
+                                $(trashEle[ele]).removeClass('selected');
+                                sRquest = $.ajax({
+                                    url: $(trashEle[ele]).find('.trash-href').val(),
+                                    type: "get",
+                                });
+                            }
+
+                            window.location.href = "index.php";
+                            return true;
+                        },
+                        cancel: function () {
+                        },
+                    }
+                });
+            }
+
             if (highCnt === 0)
-                alert("Please select a row if needed actions");
+                $.confirm({
+                    title: 'warning!',
+                    content: 'None selected. Please select a row.',
+                    type: 'green',
+                    closeIcon: true,
+                    escapeKey: true,
+                    backgroundDismiss: true,
+                    backgroundDismissAnimation: 'shake',
+                    buttons: {
+                        tryAgain: {
+                            text: 'Try again',
+                            btnClass: 'btn-red',
+                        }
+                    }
+                });
+        });
+
+        $('.column-trash').click(function () {
+
+            $(".toolbar-button").dropdown('toggle');
+            $(".custom-toolbar").trigger('trashSelected');
+
         });
 
 
         /********************************************
          * Custom Filter Of Module Table  -  Toolbar*
-         *******************************************/
+         ********************************************/
 
         var filterColIndex = [];
         var oldIndex = null;
@@ -412,6 +539,7 @@ try {
 
         //install custom filter
         selectHead.each(function (idx) {
+
             if ($(this).text() === 'Edit' || $(this).text() === 'Delete') {
                 $(this).find('i').remove();
             } else {
@@ -461,14 +589,42 @@ try {
                             filterProcess(filterIco);
 
                         } catch (e) {
-                            alert("Something went wrong! Error load filter data");
+                            $.confirm({
+                                title: 'Error!',
+                                content: 'Something went wrong! Error load filter data.',
+                                type: 'red',
+                                closeIcon: true,
+                                escapeKey: true,
+                                backgroundDismiss: true,
+                                backgroundDismissAnimation: 'shake',
+                                buttons: {
+                                    tryAgain: {
+                                        text: 'Try again',
+                                        btnClass: 'btn-red',
+                                    }
+                                }
+                            });
                             console.log(e);
                         }
                     }
                 }
 
             }).fail(function () {
-                alert("Something went wrong!");
+                $.confirm({
+                    title: 'Error!',
+                    content: 'Something went wrong!',
+                    type: 'red',
+                    closeIcon: true,
+                    escapeKey: true,
+                    backgroundDismiss: true,
+                    backgroundDismissAnimation: 'shake',
+                    buttons: {
+                        tryAgain: {
+                            text: 'Try again',
+                            btnClass: 'btn-red',
+                        }
+                    }
+                });
             });
         }
 
@@ -680,6 +836,7 @@ try {
                             var column = ntlTable.column($(this).attr('row-index'));
                             column.search($(this).children('a').text().toString()).draw();
                             oldApply = $(this).attr('row-index');
+
                             if ($('.dataTables_empty').length !== 0) {
                                 issueDraw = true;
                             }
@@ -699,7 +856,21 @@ try {
                     $('div.column-filter').remove();
 
                     if (issueDraw) {
-                        alert("Detected unavailable data in filter.");
+                        $.confirm({
+                            title: 'warning!',
+                            content: 'Detected unavailable data in filter.',
+                            type: 'green',
+                            closeIcon: true,
+                            escapeKey: true,
+                            backgroundDismiss: true,
+                            backgroundDismissAnimation: 'shake',
+                            buttons: {
+                                tryAgain: {
+                                    text: 'Try again',
+                                    btnClass: 'btn-red',
+                                }
+                            }
+                        });
                         location.reload();
                     }
                 });
@@ -757,6 +928,7 @@ try {
             $('.filter-html').hide(400);
         });
 
+        // reset filter result
         $('.reset-filter').click(function () {
 
             for (var ift in $('.filter-checkbox').select2('val')) {
@@ -768,6 +940,7 @@ try {
             $(".filter-checkbox").trigger("change");
         });
 
+        // select all column
         $('.all-filter').click(function () {
 
             $(".filter-checkbox > option").prop('selected', 'selected');
@@ -803,15 +976,7 @@ try {
             filterProcess(filterIco);
         });
 
-        //If nothing data
-        if ($('.dataTables_empty').length !== 0) {
-            $('.ttable').attr('data-toggle', 'tooltip');
-            $('.ttable').attr('title', 'No available filter');
-        }
-
-        // Enable Tooltip
-        $('[data-toggle="tooltip"]').tooltip();
-
+        // save filter result
         $('.save-filter').click(function (e) {
 
             $('.show-alert').each(function () {
@@ -879,6 +1044,16 @@ try {
 
         });
 
+        //If nothing data
+        if ($('.dataTables_empty').length !== 0) {
+            $('.ttable').attr('data-toggle', 'tooltip');
+            $('.ttable').attr('title', 'No available filter');
+        }
+
+        // Enable Tooltip
+        $('[data-toggle="tooltip"]').tooltip();
+
+
         //Specification - valid domain module
         function checkDomain() {
             if ($('#domain').attr('valid') == 'ok') {
@@ -911,8 +1086,23 @@ try {
     });
 
 } catch (e) {
+
     if ($('.ttable').length !== 0)
-        alert(e + " Please check install guide. http://networklab.global/opensips/toolbar");
+        $.confirm({
+            title: 'Error!',
+            content: e + " Please check install guide. http://networklab.global/opensips/toolbar",
+            type: 'red',
+            closeIcon: true,
+            escapeKey: true,
+            backgroundDismiss: true,
+            backgroundDismissAnimation: 'shake',
+            buttons: {
+                tryAgain: {
+                    text: 'Try again',
+                    btnClass: 'btn-red',
+                }
+            }
+        });
 }
 
 $(document).mouseout(function (e) {
@@ -943,16 +1133,5 @@ $(document).mouseup(function (e) {
         editContainer.hide();
         editContainer.remove();
     }
-
-    $('.row-highlight').each(function () {
-        if (!$('.hide-show').is(e.target) && $('.hide-show').has(e.target).length === 0
-            && !$('.hide-show-i').is(e.target) && $('.hide-show-i').has(e.target).length === 0
-            && !$('.column-trash').is(e.target) && $('.column-trash').has(e.target).length === 0
-            && !$('.toolbar-button').is(e.target) && $('.toolbar-button').has(e.target).length === 0
-            && !$('.column-edit').is(e.target) && $('.column-edit').has(e.target).length === 0
-            && !$('.column-edit, .fa-edit').is(e.target) && $('.column-edit, .fa-edit').has(e.target).length === 0
-            && !$('.column-trash, .fa-trash').is(e.target) && $('.column-trash, .fa-trash').has(e.target).length === 0)
-            $(this).removeClass('row-highlight');
-    });
 
 });

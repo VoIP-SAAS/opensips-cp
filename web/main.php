@@ -27,100 +27,109 @@ require("../config/globals.php");
 global $config;
 
 if (!isset($_SESSION['user_login'])) {
-	header("Location:index.php?err=1");
+    header("Location:index.php?err=1");
 }
 
-$main_body="blank.php";
+$main_body = "blank.php";
 if (isset($_SESSION['user_active_tool'])) {
-	foreach ($config_modules as $menuitem => $menuitem_config) {
-		if (!$menuitem_config['enabled'])
-			continue;
-		# if it has no modules, do not print it at all
-		if (!isset($menuitem_config['modules']))
-			continue;
-		foreach ($menuitem_config['modules'] as $key => $value) {
-			# if the module is not available, skip it
-			if (!isset($value['enabled']) || !$value['enabled'] ||
-					$key != $_SESSION['user_active_tool'])
-				continue;
-			$path = 'tools/';
-			# check if there is a path and it exists
-			if (!isset($value['path']))
-				$path .= $menuitem . '/' . $key;
-			else
-				$path .= $value['path'];
-			$path .= $_SESSION['user_active_page'];
-			# check if the module actually exists
-			if (file_exists($path)) {
-				$main_body=$path;
-				break;
-			}
-		}
-	}
+    foreach ($config_modules as $menuitem => $menuitem_config) {
+        if (!$menuitem_config['enabled'])
+            continue;
+        # if it has no modules, do not print it at all
+        if (!isset($menuitem_config['modules']))
+            continue;
+        foreach ($menuitem_config['modules'] as $key => $value) {
+            # if the module is not available, skip it
+            if (!isset($value['enabled']) || !$value['enabled'] ||
+                $key != $_SESSION['user_active_tool'])
+                continue;
+            $path = 'tools/';
+            # check if there is a path and it exists
+            if (!isset($value['path']))
+                $path .= $menuitem . '/' . $key;
+            else
+                $path .= $value['path'];
+            $path .= $_SESSION['user_active_page'];
+            # check if the module actually exists
+            if (file_exists($path)) {
+                $main_body = $path;
+                break;
+            }
+        }
+    }
 }
 ?>
 
 <html>
 
 <head>
- <title><?=$page_title?></title>
- <script src="/toolbar/js/vendor/jquery.min.js"></script>
+    <title><?= $page_title ?></title>
+    <script src="/toolbar/js/vendor/jquery.min.js"></script>
 </head>
 <script>
-function onXloadfunction() {
-	var path = top.frames['main_body'].location.pathname;
-	var items = path.split('/');
-	if (items.length>4 && items[items.length-4]=="tools") {
-		var tool = items[items.length-2];
-		var section = items[items.length-3];
-		top.frames['main_menu'].UpdateWholeMenu(tool);
-	}
+    function onXloadfunction() {
+        var path = top.frames['main_body'].location.pathname;
+        var items = path.split('/');
+        if (items.length > 4 && items[items.length - 4] == "tools") {
+            var tool = items[items.length - 2];
+            var section = items[items.length - 3];
+            top.frames['main_menu'].UpdateWholeMenu(tool);
+        }
 
-    <!--   @ntlToolbar  -->
+        <!--   @ntlToolbar  -->
 
-    <?php if (!empty($config->ntl_toolbar) && $config->ntl_toolbar):?>
+        console.log(tool);
+        const noneToolbarModule = ['siptrace', 'cdrviewer', 'smonitor', 'dialog', 'monit', 'tviewer','alias_management','acl_management','user_management']; // beta
+        if (typeof tool === 'undefined' || noneToolbarModule.includes(tool))
+            return;
 
-    <?php $_SESSION['ntl_toolbar'] = $config->ntl_toolbar;?>
+        <?php if (!empty($config->ntl_toolbar) && $config->ntl_toolbar):?>
 
-    try {
+        <?php $_SESSION['ntl_toolbar'] = $config->ntl_toolbar;?>
 
-        $('head', window.frames['main_body'].document).append('<link rel="stylesheet" href="/toolbar/css/vendor/jquery.dataTables.min.css">');
-        $('head', window.frames['main_body'].document).append('<link rel="stylesheet" href="/toolbar/css/vendor/bootstrap.min.css">');
-        $('head', window.frames['main_body'].document).append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">');
-        $('head', window.frames['main_body'].document).append('<link rel="stylesheet" href="/toolbar/css/toolbar.css">');
+        try {
 
-        $('head', window.frames['main_body'].document).append($('<script>').attr('src', '/toolbar/js/vendor/jquery.min.js'));
-        $('head', window.frames['main_body'].document).append($('<script>').text("" +
+            $('head', window.frames['main_body'].document).append('<link rel="stylesheet" href="/toolbar/css/vendor/jquery.dataTables.min.css">');
+            $('head', window.frames['main_body'].document).append('<link rel="stylesheet" href="/toolbar/css/vendor/jquery-confirm.min.css">');
+            $('head', window.frames['main_body'].document).append('<link rel="stylesheet" href="/toolbar/css/vendor/bootstrap.min.css">');
+            $('head', window.frames['main_body'].document).append('<link rel="stylesheet" href="/toolbar/css/vendor/select2.min.css">');
+            $('head', window.frames['main_body'].document).append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">');
+            $('head', window.frames['main_body'].document).append('<link rel="stylesheet" href="/toolbar/css/toolbar.css?v=1.001">');
 
-            "$('.ttable').hide();" +
-            "$('.ttable').parent().addClass('spinner');\n" +
-            "activeModule = '" + tool + "';" +
-            "extraColumn = '<?php echo(!empty($config->extra_column) ? $config->extra_column : 3);?>';"));
+            $('head', window.frames['main_body'].document).append($('<script>').attr('src', '/toolbar/js/vendor/jquery.min.js'));
+            $('head', window.frames['main_body'].document).append($('<script>').attr('src', '/toolbar/js/vendor/jquery-confirm.min.js'));
+            $('head', window.frames['main_body'].document).append($('<script>').attr('src', '/toolbar/js/vendor/jquery.dataTables.min.js'));
+            $('head', window.frames['main_body'].document).append($('<script>').attr('src', '/toolbar/js/vendor/bootstrap.min.js'));
+            $('head', window.frames['main_body'].document).append($('<script>').attr('src', '/toolbar/js/vendor/select2.min.js'));
+            $('head', window.frames['main_body'].document).append($('<script>').text("" +
 
-        $('html', window.frames['main_body'].document).append("<footer></footer>");
-        $('footer', window.frames['main_body'].document).append($('<script>').attr('src', '/toolbar/js/vendor/bootstrap.min.js'));
-        $('footer', window.frames['main_body'].document).append($('<script>').attr('src', '/toolbar/js/vendor/jquery.dataTables.min.js'));
-        $('footer', window.frames['main_body'].document).append($('<script>').attr('src', '/toolbar/js/toolbar.js?'));
+                "$('.ttable').hide();" +
+                "$('.ttable').parent().addClass('spinner');\n" +
+                "var activeModule = '" + tool + "';" +
+                "var extraColumn = parseInt('<?php echo(!empty($config->extra_column) ? $config->extra_column : 3);?>');"));
 
-    } catch (e) {
-        alert(e + " Please check install guide. https://netlab.com/opensips/toolbar.com");
-        window.location.reload();
+            $('html', window.frames['main_body'].document).append("<footer></footer>");
+            $('footer', window.frames['main_body'].document).append($('<script>').attr('src', '/toolbar/js/toolbar.js?v=1.001'));
+
+        } catch (e) {
+            alert(e + " Please check install guide. https://networklab.global/opensips/toolbar");
+            window.location.reload();
+        }
+        <?php endif;?>
     }
-    <?php endif;?>
-}
 
 </script>
 
 <frameset border="0" frameborder="0" framespacing="0" rows="30,*,25">
 
- <frame noresize scrolling="no" src="header.php" name="main_header">
+    <frame noresize scrolling="no" src="header.php" name="main_header">
 
- <frameset border="0" frameborder="0" framespacing="0" cols="180,*">
-  <frame noresize scrolling="no" src="menu.php" name="main_menu" id="side-bar" class="side-menu">
-  <frame noresize scrolling="auto" src="<?=$main_body?>" name="main_body" onload="onXloadfunction();">
- </frameset>
+    <frameset border="0" frameborder="0" framespacing="0" cols="180,*">
+        <frame noresize scrolling="no" src="menu.php" name="main_menu" id="side-bar" class="side-menu">
+        <frame noresize scrolling="auto" src="<?= $main_body ?>" name="main_body" onload="onXloadfunction();">
+    </frameset>
 
- <frame noresize scrolling="no" src="footer.php" name="main_footer">
+    <frame noresize scrolling="no" src="footer.php" name="main_footer">
 
 </frameset>
 
