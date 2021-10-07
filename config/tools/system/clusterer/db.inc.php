@@ -21,19 +21,19 @@
  */
 
  //database host
- //$config->db_host_clusterer = "localhost";
+//$config->db_host_clusterer = "localhost";
  
  //database port - leave empty for default
- //$config->db_port_clusterer = "";
+// $config->db_port_clusterer = "";
  
  //database connection user
- //$config->db_user_clusterer = "opensips";
+// $config->db_user_clusterer = "postgres";
  
  //database connection password
- //$config->db_pass_clusterer = "opensipsrw";
+// $config->db_pass_clusterer = "postgres";
  
  //database name
- //$config->db_name_clusterer = "opensips";
+// $config->db_name_clusterer = "opensips";
  
  //if ($config->db_port_clusterer != "") $config->db_host_clusterer = $config->db_host_clusterer . ";port=" . $config->db_port_clusterer;
  

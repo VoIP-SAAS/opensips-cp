@@ -34,6 +34,7 @@ $config->permissions = array("read-only","read-write");
 $config->admin_passwd_mode=1;
 
 //Toolbar config
+
 $config->ntl_toolbar = true;
 $config->extra_column = 3;
 

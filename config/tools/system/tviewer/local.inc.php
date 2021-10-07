@@ -33,17 +33,17 @@
 
 //if you want submenu (horizontal) items add them here:
 
-// $custom_config[$module_id]['submenu_items'] = array(
-// 					"0"	=> "Submenu1",
-//	 				"1"	=> "Submenu2"
-//				);
+ $custom_config[$module_id]['submenu_items'] = array(
+ 					"0"	=> "Submenu1",
+	 				"1"	=> "Submenu2"
+				);
 
 
 
 
 /* config for each submenu item */
-
 /*
+
 Example table: table1
 +---------------+------------------+------+-----+---------+----------------+
 | Field         | Type             | Null | Key | Default | Extra          |
@@ -62,11 +62,11 @@ Example table: table1
 ####################################################################################
 */
 
-// $custom_config[$module_id][0]['custom_table'] = "table1";
-// $custom_config[$module_id][0]['custom_table_primary_key'] = "id";
-// $custom_config[$module_id][0]['custom_table_order_by'] = $custom_config[$module_id][0]['custom_table_primary_key'];
-// $custom_config[$module_id][0]['per_page'] = 25;
-// $custom_config[$module_id][0]['page_range'] = 3;
+ $custom_config[$module_id][0]['custom_table'] = "table1";
+ $custom_config[$module_id][0]['custom_table_primary_key'] = "id";
+ $custom_config[$module_id][0]['custom_table_order_by'] = $custom_config[$module_id][0]['custom_table_primary_key'];
+ $custom_config[$module_id][0]['per_page'] = 25;
+ $custom_config[$module_id][0]['page_range'] = 3;
 
 /*
  Columns definition:
@@ -108,7 +108,7 @@ Example table: table1
 		 indicates how many characters should be shown from the text area content. Default is 50.
 */
 
- /*
+/*
  $custom_config[$module_id][0]['custom_table_column_defs'] = array (	
 			"id" 		=> 	array (
 					"header" 			=> "ID",
@@ -209,4 +209,5 @@ $custom_config[$module_id][0]['custom_search'] = 	array ( "enabled" => true,
 												"action_template"	=> "template/custom_templates/add.php"
 										)
 						);
+
 */

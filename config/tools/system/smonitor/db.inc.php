@@ -22,19 +22,19 @@
 
 
  //database host
- //$config->db_host_smonitor = "localhost";
+// $config->db_host_smonitor = "localhost";
  
  //database port - leave empty for default
- //$config->db_port_smonitor = "";
+// $config->db_port_smonitor = "";
  
  //database connection user
- //$config->db_user_smonitor = "root";
+// $config->db_user_smonitor = "postgres";
  
  //database connection password
- //$config->db_pass_smonitor = "mysql";
+// $config->db_pass_smonitor = "postgres";
  
  //database name
- //$config->db_name_smonitor = "opensips";
+// $config->db_name_smonitor = "opensips";
  
  //if ($config->db_port_smonitor != "") $config->db_host_smonitor = $config->db_host_smonitor . ";port=" . $config->db_port_smonitor;
  

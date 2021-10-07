@@ -22,9 +22,9 @@
 session_start();
 require("../config/modules.inc.php");
 require("../config/local.inc.php");
-require("../config/globals.php");
 
 global $config;
+
 
 if (!isset($_SESSION['user_login'])) {
     header("Location:index.php?err=1");
@@ -66,8 +66,13 @@ if (isset($_SESSION['user_active_tool'])) {
     <title><?= $page_title ?></title>
     <script src="/toolbar/js/vendor/jquery.min.js"></script>
 </head>
+
+
 <script>
+
     function onXloadfunction() {
+
+
         var path = top.frames['main_body'].location.pathname;
         var items = path.split('/');
         if (items.length > 4 && items[items.length - 4] == "tools") {
@@ -78,14 +83,15 @@ if (isset($_SESSION['user_active_tool'])) {
 
         <!--   @ntlToolbar  -->
 
-        console.log(tool);
         const noneToolbarModule = ['siptrace', 'cdrviewer', 'smonitor', 'dialog', 'monit', 'tviewer','alias_management','acl_management','user_management']; // beta
         if (typeof tool === 'undefined' || noneToolbarModule.includes(tool))
+
             return;
 
-        <?php if (!empty($config->ntl_toolbar) && $config->ntl_toolbar):?>
+        <?php if (!empty($ntl_toolbar) && $ntl_toolbar):?>
 
-        <?php $_SESSION['ntl_toolbar'] = $config->ntl_toolbar;?>
+        <?php   $_SESSION['ntl_toolbar'] = $ntl_toolbar;?>
+
 
         try {
 
@@ -106,10 +112,10 @@ if (isset($_SESSION['user_active_tool'])) {
                 "$('.ttable').hide();" +
                 "$('.ttable').parent().addClass('spinner');\n" +
                 "var activeModule = '" + tool + "';" +
-                "var extraColumn = parseInt('<?php echo(!empty($config->extra_column) ? $config->extra_column : 3);?>');"));
+                "var extraColumn = parseInt('<?php echo(!empty($extra_column) ? $extra_column : 3);?>');"));
 
             $('html', window.frames['main_body'].document).append("<footer></footer>");
-            $('footer', window.frames['main_body'].document).append($('<script>').attr('src', '/toolbar/js/toolbar.js?v=1.001'));
+            $('footer', window.frames['main_body'].document).append($('<script>').attr('src', '/toolbar/js/toolbar.js?v=1.004'));
 
         } catch (e) {
             alert(e + " Please check install guide. https://networklab.global/opensips/toolbar");

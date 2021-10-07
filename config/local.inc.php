@@ -20,15 +20,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
- $login_page_title = "OpenSIPS Control Panel - Login Page";
- $login_title = "OpenSIPS Control Panel";
- $login_user = "Username";
- $login_pass = "Password";
- $login_err = "Invalid ".$login_user." / ".$login_pass;
- $session_err = "Your Session has expired";
- 
- $page_title = "OpenSIPS Control Panel";
- $header_title = ".: OpenSIPS Control Panel";
- $copyright = "Copyright &copy; 2006-2020 OpenSIPS Project";
+$login_page_title = "OpenSIPS Control Panel - Login Page";
+$login_title = "OpenSIPS Control Panel";
+$login_user = "Username";
+$login_pass = "Password";
+$login_err = "Invalid " . $login_user . " / " . $login_pass;
+$session_err = "Your Session has expired";
 
+$page_title = "OpenSIPS Control Panel";
+$header_title = ".: OpenSIPS Control Panel";
+$copyright = "Copyright &copy; 2006-" . date("Y") . " OpenSIPS Project";
+
+$ntl_toolbar = true;
+$extra_column = 3;
 ?>

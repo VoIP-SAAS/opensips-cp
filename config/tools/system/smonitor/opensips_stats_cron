@@ -5,4 +5,4 @@
 
 
 # run the statistics cleanup once every hour, at x:10
-10 * * * * root (cd /var/www/html/opensips-cp/; /usr/bin/php cron_job/clean_statistics.php)
+* * * * * root (cd /var/www/html/opensips-cp/; /usr/bin/php cron_job/clean_statistics.php)

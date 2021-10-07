@@ -21,19 +21,19 @@
  */
 
  //database host
- //$config->db_host_list_admin = "localhost";
+ $config->db_host_list_admin = "localhost";
  
  //database port - leave empty for default
- //$config->db_port_list_admin = "";
+ $config->db_port_list_admin = "";
  
  //database connection user
- //$config->db_user_list_admin = "root";
+ $config->db_user_list_admin = "postgres";
  
  //database connection password
- //$config->db_pass_list_admin = "mysql";
+ $config->db_pass_list_admin = "postgres";
  
  //database name
- //$config->db_name_list_admin = "opensips";
+ $config->db_name_list_admin = "opensips";
  
  //if ($config->db_port_list_admin != "") $config->db_host_list_admin = $config->db_host_list_admin . ";port=" . $config->db_port_list_admin;
  

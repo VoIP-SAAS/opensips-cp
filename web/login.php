@@ -89,6 +89,7 @@ if ($avail_perms == "all") {
 }
 $login_ok=true;
 $log = "[OK]  [".date("d-m-Y")." ".date("H:i:s")."] '$name' from '".$_SERVER['REMOTE_ADDR']."'\n";
+
 header("Location:main.php");
 exit();
 ?>

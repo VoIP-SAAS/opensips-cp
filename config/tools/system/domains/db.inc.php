@@ -21,20 +21,20 @@
  */
 
  //database host
- //$config->db_host_domains = "loclhost";
+// $config->db_host_domains = "loclhost";
  
  //database port - leave empty for default
- //$config->db_port_domains = "";
+// $config->db_port_domains = "";
  
  //database connection user
- //$config->db_user_domains = "root";
+// $config->db_user_domains = "postgres";
  
  //database connection password
- //$config->db_pass_domains = "mysql";
+// $config->db_pass_domains = "postgres";
  
  //database name
- //$config->db_name_domains = "opensips";
+// $config->db_name_domains = "opensips";
  
- //if ($config->db_port_domains != "") $config->db_host_domains = $config->db_host_domains . ";port=" . $config->db_port_domains;
+// if ($config->db_port_domains != "") $config->db_host_domains = $config->db_host_domains . ";port=" . $config->db_port_domains;
  
 ?>

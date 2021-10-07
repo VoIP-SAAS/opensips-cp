@@ -23,7 +23,7 @@
 if (!isset($config)) $config = new stdClass();
 
  //database driver mysql or pgsql
- $config->db_driver = "mysql";
+ $config->db_driver = "pgsql";
 
  //database host
  $config->db_host = "localhost";
@@ -32,10 +32,10 @@ if (!isset($config)) $config = new stdClass();
  $config->db_port = "";
  
  //database connection user
- $config->db_user = "opensips";
+ $config->db_user = "postgres";
  
  //database connection password
- $config->db_pass = "opensipsrw";
+ $config->db_pass = "postgres";
  
  //database name
  $config->db_name = "opensips";

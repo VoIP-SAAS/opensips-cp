@@ -21,19 +21,19 @@
  */
 
  //database host
- //$config->db_host_cdrviewer = "localhost";
+//$config->db_host_cdrviewer = "localhost";
  
  //database port - leave empty for default
- //$config->db_port_cdrviewer = "";
+//$config->db_port_cdrviewer = "";
  
  //database connection user
- //$config->db_user_cdrviewer = "root";
+//$config->db_user_cdrviewer = "postgres";
  
  //database connection password
- //$config->db_pass_cdrviewer = "mysql";
+//$config->db_pass_cdrviewer = "postgres";
  
  //database name
- //$config->db_name_cdrviewer = "opensips";
+//$config->db_name_cdrviewer = "opensips";
  
  //if ($config->db_port_cdrviewer != "") $config->db_host_cdrviewer = $config->db_host_cdrviewer . ";port=" . $config->db_port_cdrviewer;
  

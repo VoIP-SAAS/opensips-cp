@@ -21,19 +21,19 @@
  */
 
  //database host
- //$config->db_host_acl_management = "localhost";
+// $config->db_host_acl_management = "localhost";
  
  //database port - leave empty for default
- //$config->db_port_acl_management = "";
+// $config->db_port_acl_management = "";
  
  //database connection user
- //$config->db_user_acl_management = "opensips";
+// $config->db_user_acl_management = "postgres";
  
  //database connection password
- //$config->db_pass_acl_management = "opensipsrw";
+// $config->db_pass_acl_management = "postgres";
  
  //database name
- //$config->db_name_acl_management = "opensips";
+// $config->db_name_acl_management = "opensips";
  
  //if ($config->db_port_acl_management != "") $config->db_host_acl_management = $config->db_host_acl_management . ";port=" . $config->db_port_acl_management;
  
